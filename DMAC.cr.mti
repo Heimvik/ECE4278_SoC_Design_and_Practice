@@ -1,0 +1,39 @@
+{C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_read.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_read.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module axi_reader
+-- Importing package axi_utils
+
+Top level modules:
+	axi_reader
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling package axi_utils
+-- Compiling interface ch_ar
+-- Importing package axi_utils
+-- Compiling interface ch_dr
+-- Compiling interface ch_aw
+-- Compiling interface ch_dw
+-- Compiling interface ch_b
+-- Compiling interface ch_global
+-- Compiling interface axi4
+
+Top level modules:
+	--none--
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv} {0 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module axi_tb
+-- Importing package axi_utils
+** Error: C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv(7): 'addr_msg' already declared as a typedef
+** Error: C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv(14): Illegal to use typedef "addr_msg" as a variable.
+
+} {5.0 7.0} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_write.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/Utveksling/ECE4278/SystemVerilog_bootcamp/DMAC/top/axi/axi_write.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module axi_writer
+-- Importing package axi_utils
+
+Top level modules:
+	axi_writer
+
+} {} {}}

@@ -1,13 +1,15 @@
 package axi_utils;
     parameter int addr_width = 32;
     parameter int data_width = 32;
-    parameter int data_read_buffer_size = 16;
+    parameter int axi_data_buffer_size = 16;
 
     typedef enum {AW,AR,DW,DR,B} ch_state;
 
+    typedef enum {AR_READY,AR_READ} ar_state;
     typedef enum {DR_READY,DR_READ} dr_state;
     typedef enum {DW_VALID,DW_WRITE} dw_state;
-    typedef enum {B_READY,B_READ} b_state;
+    typedef enum {B_READY,B_READ} br_state;
+    typedef enum {B_VALID,B_WRITE} bw_state;
 
     typedef enum logic [2:0] {
         OKAY       = 3'b000, // Non-exclusive write: The transaction was successful.
@@ -55,6 +57,9 @@ interface ch_ar;
     logic [2:0] ARPROT;
     logic ARVALID;
     logic ARREADY;
+    modport addr_reader(output ARID, ARADDR, ARLEN, ARSIZE, ARBURST, ARLOCK, ARCACHE, ARPROT, ARVALID, input ARREADY);
+    modport addr_writer(input ARID, ARADDR, ARLEN, ARSIZE, ARBURST, ARLOCK, ARCACHE, ARPROT, ARVALID, output ARREADY);
+
 endinterface
 
 interface ch_dr;

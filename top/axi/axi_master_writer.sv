@@ -4,20 +4,20 @@ Inputs: addr_msg specifying the adress to write to
         data_msg array specifying the data to write
 Outputs: Error code, valid message id
 
-Once the id appears on the valid msg id output, the message is written to the bus with the given error code.
+Once the id appears on the valid msg id output, the message is written to the salve which responed with the given error code.
 */
-module axi_writer(
+module axi_master_writer(
     interface inf,
     input axi_utils::addr_msg addr_msg,
-    input axi_utils::data_msg data_msg[axi_utils::data_read_buffer_size],
-    output axi_utils::resp_msg resp_msg_frontbuffer_cur,
+    input axi_utils::data_msg data_msg_buffer[axi_utils::axi_data_buffer_size],
+    output axi_utils::resp_msg resp_msg_buffer_cur,
     output int unsigned valid_msg_id_cur
 );
     import axi_utils::*;
 
     ch_state state_cur, state_nxt = AW;
     dw_state dr_state_cur, dr_state_nxt = DW_VALID;
-    b_state b_state_cur, b_state_nxt = B_READY;
+    br_state b_state_cur, b_state_nxt = B_READY;
 
     `define aw_inf inf.ch_aw.addr_writer;
     `define dw_inf inf.ch_w.data_writer;
@@ -28,7 +28,7 @@ module axi_writer(
 
     int unsigned valid_msg_id_nxt;
 
-    resp_msg resp_msg_frontbuffer_nxt;
+    resp_msg resp_msg_buffer_nxt;
 
     always_comb begin
         state_nxt = state_cur;
@@ -50,10 +50,9 @@ module axi_writer(
 
         state_nxt = state_cur;
         dr_state_nxt = dr_state_cur;
-        beats_nxt = beats_cur;
         target_beats_nxt = target_beats_cur;
         valid_msg_id_nxt = valid_msg_id_cur;
-        resp_msg_frontbuffer_nxt = resp_msg_frontbuffer_cur;
+        resp_msg_buffer_nxt = resp_msg_buffer_cur;
 
         case (state_cur)
             AW: begin
@@ -75,29 +74,11 @@ module axi_writer(
             end
             DW: begin
                 aw_inf.AWVALID = 0;
-                case (dr_state_cur)
-                    DW_VALID: begin
-                        dw_inf.WVALID = 1;
-                        dw_inf.WID = addr_msg.ID;
-                        dw_inf.WDATA = data_msg[beats_cur].DATA;
-                        dw_inf.WSTRB = data_msg[beats_cur].STRB;
-                        dw_inf.WLAST = (beats_cur == target_beats_cur-1);
-                        if (dw_inf.WREADY) begin
-                            dr_state_nxt = DW_WRITE;
-                        end else begin
-                            dr_state_nxt = DW_VALID;
-                        end
-                    end
-                    DW_WRITE: begin
-                        dr_state_nxt = DW_VALID;
-                        if (dw_inf.WLAST) begin
-                            state_nxt = B;
-                        end else begin
-                            beats_nxt = beats_cur + 1;
-                            state_nxt = DW;
-                        end
-                    end
-                endcase
+                dw_inf.WVALID = 1;
+                dw_inf.WID = addr_msg.ID;
+                dw_inf.WDATA = data_msg_buffer[beats_cur].DATA;
+                dw_inf.WSTRB = data_msg_buffer[beats_cur].STRB;
+                dw_inf.WLAST = (beats_cur == target_beats_cur-1);
             end
             B: begin
                 case(b_state_cur)
@@ -111,7 +92,7 @@ module axi_writer(
                     end
                     B_READ: begin
                         b_inf.RREADY = 0;
-                        resp_msg_frontbuffer_nxt = '{b_inf.RRESP, b_inf.RID};
+                        resp_msg_buffer_nxt = '{b_inf.RRESP, b_inf.RID};
                         valid_msg_id_nxt = data_msg_cur.ID;
                         b_state_nxt = B_READY;
                         state_nxt = AW;
@@ -126,12 +107,18 @@ module axi_writer(
             state_cur <= AW;
             dr_state_cur <= DW_VALID;
         end else begin
+            unique if(dw_inf.WREADY && dw_inf.WVALID) begin
+                beats_cur <= beats_cur + 1;
+            end else if(!dw_inf.WLAST && !(dw_inf.WREADY && dw_inf.WVALID)) begin
+                beats_cur <= beats_cur;
+            end else begin
+                beats_cur <= 0;
+            end
             state_cur <= state_nxt;
             dr_state_cur <= dr_state_nxt;
-            beats_cur <= beats_nxt;
             target_beats_cur <= target_beats_nxt;
             valid_msg_id_cur <= valid_msg_id_nxt;
-            resp_msg_frontbuffer_cur <= resp_msg_frontbuffer_nxt;
+            resp_msg_buffer_cur <= resp_msg_buffer_nxt;
         end
     end
 endmodule
