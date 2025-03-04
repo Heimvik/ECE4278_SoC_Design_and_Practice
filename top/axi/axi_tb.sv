@@ -43,6 +43,7 @@ module axi_tb;
 
     //Clock generation
     initial begin
+        inf.ch_global.rst = 0;
         inf.ch_global.clk = 0;
         forever begin
             #5 inf.ch_global.clk = ~inf.ch_global.clk;
@@ -51,18 +52,22 @@ module axi_tb;
 
     //Testbench
     initial begin
-        addr_msg_write = '{ID: 4, ADDR: 32'h00000001, LEN: 4'b0001, SIZE: 3'b010, BURST: 2'b01, LOCK: 0, CACHE: 0, PROT: 0};
+        addr_msg_write = '{ID: 4, ADDR: 32'h00000001, LEN: 4'b1111, SIZE: 3'b010, BURST: 2'b01, LOCK: 0, CACHE: 0, PROT: 0};
         //Fill the addr_msg and data_msg_buffer_tx
         for(int i = 0; i < axi_data_buffer_size; i++) begin
             data_msg_buffer_tx[i].ID = 5;
             data_msg_buffer_tx[i].DATA = i;
             data_msg_buffer_tx[i].STRB = 15;
         end
-        #200;
+        wait(valid_msg_id_rx == valid_msg_id_tx && valid_msg_id_tx != 0);
+        $display("Ids: %0d %0d", valid_msg_id_rx, valid_msg_id_tx);
+        if(1) begin
+            display_data_buffers();
+            $display("Test passed");
+        end else begin
+            display_data_buffers();
+            $display("Test failed");
+        end
         $finish;
-    end
-
-    always_ff @(posedge inf.ch_global.clk) begin
-        display_data_buffers();
     end
 endmodule
