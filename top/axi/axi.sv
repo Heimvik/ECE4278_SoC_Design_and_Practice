@@ -31,8 +31,6 @@ package axi_utils;
         logic [1:0] LOCK;
         logic [3:0] CACHE;
         logic [2:0] PROT;
-        logic [data_width-1:0] DATA;
-        logic [1:0] RESP;
     } addr_msg;
     typedef struct {
         logic [3:0] ID;
@@ -47,45 +45,46 @@ endpackage
 
 interface ch_ar;
     import axi_utils::*;
-    logic [3:0] ARID;
-    logic [addr_width-1:0] ARADDR;
-    logic [3:0] ARLEN;
-    logic [2:0] ARSIZE;
-    logic [1:0] ARBURST;
-    logic [1:0] ARLOCK;
-    logic [3:0] ARCACHE;
-    logic [2:0] ARPROT;
-    logic ARVALID;
-    logic ARREADY;
-    modport addr_reader(output ARID, ARADDR, ARLEN, ARSIZE, ARBURST, ARLOCK, ARCACHE, ARPROT, ARVALID, input ARREADY);
-    modport addr_writer(input ARID, ARADDR, ARLEN, ARSIZE, ARBURST, ARLOCK, ARCACHE, ARPROT, ARVALID, output ARREADY);
-
+    logic [3:0] ID;
+    logic [addr_width-1:0] ADDR;
+    logic [3:0] LEN;
+    logic [2:0] SIZE;
+    logic [1:0] BURST;
+    logic [1:0] LOCK;
+    logic [3:0] CACHE;
+    logic [2:0] PROT;
+    logic VALID;
+    logic READY;
+    modport tx(output ID, ADDR, LEN, SIZE, BURST, LOCK, CACHE, PROT, VALID, input READY);
+    modport rx(input ID, ADDR, LEN, SIZE, BURST, LOCK, CACHE, PROT, VALID, output READY);
 endinterface
 
 interface ch_dr;
     import axi_utils::*;
-    logic [3:0] RID;
-    logic [data_width-1:0] RDATA;
+    logic [3:0] ID;
+    logic [data_width-1:0] DATA;
     logic [3:0] STRB;
-    logic RLAST;
-    logic RVALID;
-    logic RREADY;
-    modport data_reader(input RID, RDATA, STRB, RLAST, RVALID, output RREADY);
+    logic LAST;
+    logic VALID;
+    logic READY;
+    modport tx(output ID, DATA, STRB, LAST, VALID, input READY);
+    modport rx(input ID, DATA, STRB, LAST, VALID, output READY);
 endinterface
 
 interface ch_aw;
     import axi_utils::*;
-    logic [3:0] AWID;
-    logic [addr_width-1:0] AWADDR;
-    logic [3:0] AWLEN;
-    logic [2:0] AWSIZE;
-    logic [1:0] AWBURST;
-    logic [1:0] AWLOCK;
-    logic [3:0] AWCACHE;
-    logic [2:0] AWPROT;
-    logic AWVALID;
-    logic AWREADY;
-    modport addr_writer(output AWID, AWADDR, AWLEN, AWSIZE, AWBURST, AWLOCK, AWCACHE, AWPROT, AWVALID, input AWREADY);
+    logic [3:0] ID;
+    logic [addr_width-1:0] ADDR;
+    logic [3:0] LEN;
+    logic [2:0] SIZE;
+    logic [1:0] BURST;
+    logic [1:0] LOCK;
+    logic [3:0] CACHE;
+    logic [2:0] PROT;
+    logic VALID;
+    logic READY;
+    modport tx(output ID, ADDR, LEN, SIZE, BURST, LOCK, CACHE, PROT, VALID, input READY);
+    modport rx(input ID, ADDR, LEN, SIZE, BURST, LOCK, CACHE, PROT, VALID, output READY);
 endinterface
 
 interface ch_dw;
@@ -96,7 +95,8 @@ interface ch_dw;
     logic LAST;
     logic VALID;
     logic READY;
-    modport data_writer(output ID, DATA, STRB, LAST, VALID, input READY);
+    modport tx(output ID, DATA, STRB, LAST, VALID, input READY);
+    modport rx(input ID, DATA, STRB, LAST, VALID, output READY);
 endinterface
 
 interface ch_b;
@@ -105,11 +105,11 @@ interface ch_b;
     logic [1:0] RESP;
     logic VALID;
     logic READY;
-    modport b_writer(output ID, RESP, VALID, input READY);
-    modport b_reader(input ID, RESP, VALID, output READY);
+    modport tx(output ID, RESP, VALID, input READY);
+    modport rx(input ID, RESP, VALID, output READY);
 endinterface
 
-interface ch_global;
+interface ch_g;
     logic clk;
     logic rst;
 endinterface
@@ -117,11 +117,11 @@ endinterface
 
 interface axi4;
     import axi_utils::*;
-    axi4_ch_read_addr ch_read_addr();
-    axi4_ch_read_data ch_read_data();
-    axi4_ch_write_addr ch_write_addr();
-    axi4_ch_write_data ch_write_data();
-    axi4_ch_write_resp ch_write_resp();
-    axi4_ch_global ch_global();
+    ch_ar ch_addr_read();
+    ch_aw ch_addr_write();
+    ch_dr ch_data_read();
+    ch_dw ch_data_write();
+    ch_b ch_resp();
+    ch_g ch_global();
 endinterface
 

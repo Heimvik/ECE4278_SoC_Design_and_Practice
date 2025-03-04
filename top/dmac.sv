@@ -15,7 +15,6 @@ package dmac_utils;
         logic [control_reg_width-1:0] data_buffer[data_buffer_size-1:0];
         awc_regs control_regs[num_control_regs-1:0];
     } dmac_regs;
-
 endpackage
 
 //Internal interface for the DMAC module
@@ -24,6 +23,7 @@ interface dmac_inf();
     //AXI slave reader needs read access to the data buffer (readback to CPU)
     //AXI master writer needs read access to the data buffer (write to peripheral)
     //AXI master reader needs read access to the data buffer (read from peripheral)
+    import dmac_utils::*;
     dmac_regs control_regs;
 
 endinterface

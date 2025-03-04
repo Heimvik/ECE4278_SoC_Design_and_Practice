@@ -6,7 +6,7 @@ Outputs: data_msg containing the data read from the adress
 Once the id appears on the valid msg id output, the message is read from the bus with the given error code.
 */
 module axi_master_reader(
-    interface inf, 
+    input axi4_inf inf, 
     input axi_utils::addr_msg addr_msg,
     output axi_utils::data_msg data_msg_frontbuffer_cur[axi_utils::axi_data_buffer_size],
     output int unsigned valid_msg_id_cur
@@ -16,8 +16,8 @@ module axi_master_reader(
     ch_state state_cur, state_nxt = AW;
     dr_state dr_state_cur, dr_state_nxt = DR_READY;
 
-    `define ar_inf inf.ch_ar.addr_writer;
-    `define dr_inf inf.ch_dr.data_reader;
+    `define ar_inf inf.ch_addr_read.tx;
+    `define dr_inf inf.ch_data_read.rx;
 
     int unsigned target_beats_cur, target_beats_nxt = 0;
     int unsigned beats_cur, beats_nxt = 0;

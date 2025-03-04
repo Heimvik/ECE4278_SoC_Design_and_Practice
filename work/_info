@@ -10,33 +10,58 @@ cModel Technology
 Z0 dC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC
 Yaxi4
 Z1 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
-Z2 DXx4 work 9 axi_utils 0 22 K24MBb<OL:iN09:eVVCBL0
-Z3 !s110 1741060957
+Z2 DXx4 work 9 axi_utils 0 22 mHJTZ=ED<1Jml595W`AY00
+Z3 !s110 1741080299
 !i10b 1
-!s100 QDY8geSZ0WHMTIjdKMzBm2
-II1N`>TABP9U7Z121440hf0
+!s100 KIg_VY2eDiZ_e_7:N_foi1
+I:DfBn9z0jSclS?7PN=CAe3
 Z4 VDg1SIo80bB@j0V0VzS_@n1
 Z5 !s105 axi_sv_unit
 S1
 R0
-Z6 w1740884858
+Z6 w1741079723
 Z7 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi.sv
 Z8 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi.sv
-L0 113
+L0 118
 Z9 OV;L;10.5b;63
 r1
 !s85 0
 31
-Z10 !s108 1741060957.000000
+Z10 !s108 1741080299.000000
 Z11 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi.sv|
 Z12 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi.sv|
 !i113 1
 Z13 o-work work -sv
 Z14 tCvgOpt 0
-vaxi_reader
+vaxi_master_writer
 R1
 R2
-Z15 !s110 1741060956
+R3
+!i10b 1
+!s100 `NcOSKQLQ0Q]NGZebl@4e1
+I<jg<hk98VF@j[8b27hG=U0
+R4
+!s105 axi_master_writer_sv_unit
+S1
+R0
+w1741080070
+8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_master_writer.sv
+FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_master_writer.sv
+L0 9
+R9
+r1
+!s85 0
+31
+R10
+!s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_master_writer.sv|
+!s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_master_writer.sv|
+!i113 1
+R13
+R14
+vaxi_reader
+R1
+Z15 DXx4 work 9 axi_utils 0 22 K24MBb<OL:iN09:eVVCBL0
+Z16 !s110 1741060956
 !i10b 1
 !s100 ;L:Y@e[B0_LhnA;;Y=GR;1
 IOf@d0:l5@[C9d[dP:<z<E0
@@ -52,9 +77,86 @@ R9
 r1
 !s85 0
 31
-Z16 !s108 1741060956.000000
+Z17 !s108 1741060956.000000
 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_read.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_read.sv|
+!i113 1
+R13
+R14
+vaxi_slave_reader
+R1
+DXx4 work 9 axi_utils 0 22 [0>b5^7P=S`K;IMck3@Ie3
+Z18 DXx4 work 10 dmac_utils 0 22 niTejc`WL`>R9^?a^7;222
+!s110 1741072739
+!i10b 1
+!s100 GCnUDX;V?0QooBkA5z2C70
+I]VAlg0HN3G<EcDzE15B>l2
+R4
+Z19 !s105 axi_slave_writer_sv_unit
+S1
+R0
+w1741072716
+Z20 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_slave_writer.sv
+Z21 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_slave_writer.sv
+L0 8
+R9
+r1
+!s85 0
+31
+!s108 1741072739.000000
+Z22 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_slave_writer.sv|
+Z23 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_slave_writer.sv|
+!i113 1
+R13
+R14
+vaxi_slave_writer
+R1
+R2
+R18
+R3
+!i10b 1
+!s100 YAA[@74D9<YPo[e]Q9]XN3
+I5?S825hUmDW?f6i3=1:cX3
+R4
+R19
+S1
+R0
+w1741080291
+R20
+R21
+L0 8
+R9
+r1
+!s85 0
+31
+R10
+R22
+R23
+!i113 1
+R13
+R14
+vaxi_tb
+R1
+R2
+R3
+!i10b 1
+!s100 =`i`N@zlaTBd6Dgd:f;4c1
+IFi2FeJKOIldgkgaU1ieV82
+R4
+!s105 axi_tb_sv_unit
+S1
+R0
+w1741076492
+8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv
+FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv
+L0 1
+R9
+r1
+!s85 0
+31
+R10
+!s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv|
+!s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_tb.sv|
 !i113 1
 R13
 R14
@@ -62,9 +164,9 @@ Xaxi_utils
 R1
 R3
 !i10b 1
-!s100 I88[g?NOFDHOIWo3g0AP[2
-IK24MBb<OL:iN09:eVVCBL0
-VK24MBb<OL:iN09:eVVCBL0
+!s100 Jo^KcBcWA^c^4C2`2DGC`1
+ImHJTZ=ED<1Jml595W`AY00
+VmHJTZ=ED<1Jml595W`AY00
 S1
 R0
 R6
@@ -83,8 +185,8 @@ R13
 R14
 vaxi_writer
 R1
-R2
 R15
+R16
 !i10b 1
 !s100 h662>4iW;]Ga:KJ8FGeMY0
 ITnL[m9TY4ZIg_NQmlLlkV1
@@ -100,7 +202,7 @@ R9
 r1
 !s85 0
 31
-R16
+R17
 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_write.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/axi/axi_write.sv|
 !i113 1
@@ -111,8 +213,8 @@ R1
 R2
 R3
 !i10b 1
-!s100 OnM;=VkUmlEWmK8:Ma?4g2
-I;jZQh`DCJ`=j_F6=8[]Uo2
+!s100 HW91LRVQMo6N>IlNW3inU3
+IK7YkYJ2To]4PD_hiY^lc=1
 R4
 R5
 S1
@@ -136,8 +238,8 @@ R1
 R2
 R3
 !i10b 1
-!s100 :APfj^AN4RCjCjmzNZ_M^3
-IU4mj@IzVE;3`XEA<DhWES2
+!s100 SG8m<fLd^CC8@AI<G67C:2
+IMP]F@=e3QfKQ?lACTIRFZ1
 R4
 R5
 S1
@@ -145,7 +247,7 @@ R0
 R6
 R7
 R8
-L0 71
+L0 74
 R9
 r1
 !s85 0
@@ -161,8 +263,8 @@ R1
 R2
 R3
 !i10b 1
-!s100 G>0ITOG_hkEc?B1]l:9Q91
-IXk=7Xh<dT[Z4@INOB=MOW3
+!s100 oKA`d0SLoiIDlHLhm6n^a2
+IKh<ZcKFh8XBKK]RP8aHEI1
 R4
 R5
 S1
@@ -170,7 +272,7 @@ R0
 R6
 R7
 R8
-L0 97
+L0 102
 R9
 r1
 !s85 0
@@ -186,8 +288,8 @@ R1
 R2
 R3
 !i10b 1
-!s100 OIBQ:gAhX<NFRQhI6XW591
-I9lflW1kS3@<MO2U8FFNPU3
+!s100 E44FD`4XDSGVE;FQ1hBQ50
+Im3977Ob9hd3EWR3QQWB@H1
 R4
 R5
 S1
@@ -195,7 +297,7 @@ R0
 R6
 R7
 R8
-L0 60
+L0 62
 R9
 r1
 !s85 0
@@ -211,8 +313,8 @@ R1
 R2
 R3
 !i10b 1
-!s100 QzoHzN0c5KF;zACk>Fei93
-I<1^o2`I?VM1o6X_bhI20g0
+!s100 H4HD[EGB2=QF4ce4M1Lgn1
+IhJcQ<IZDH4ZjKHV2Yd33h3
 R4
 R5
 S1
@@ -220,7 +322,31 @@ R0
 R6
 R7
 R8
-L0 86
+L0 90
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 1
+R13
+R14
+Ych_g
+R1
+R3
+!i10b 1
+!s100 @3o=eQo24`J3fDTEhgnnk1
+I=V?<8Yeh4ZmLRQ43=Q[3W0
+R4
+R5
+S1
+R0
+R6
+R7
+R8
+Z24 L0 112
 R9
 r1
 !s85 0
@@ -233,25 +359,73 @@ R13
 R14
 Ych_global
 R1
-R3
+!s110 1741077335
 !i10b 1
-!s100 X>egOOB]5OVM=:QgUZJLU1
-Ii`G]iRiFGk54TDD<0[nzz1
+!s100 T_9WXkHT9SM8Y<QNFdYO81
+I:g1h4?__fF5l6E[AkhGY@2
 R4
 R5
 S1
 R0
-R6
+w1741077330
 R7
 R8
-L0 107
+R24
+R9
+r1
+!s85 0
+31
+!s108 1741077335.000000
+R11
+R12
+!i113 1
+R13
+R14
+Ydmac_inf
+R1
+R18
+R3
+!i10b 1
+!s100 bXC452@dX=X1h_BomAXZL1
+IFWzk9o6]BeKhc_]YC>QKE0
+R4
+!s105 dmac_sv_unit
+S1
+R0
+Z25 w1741072736
+Z26 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/dmac.sv
+Z27 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/dmac.sv
+L0 21
 R9
 r1
 !s85 0
 31
 R10
-R11
-R12
+Z28 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/dmac.sv|
+Z29 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC/top/dmac.sv|
+!i113 1
+R13
+R14
+Xdmac_utils
+R1
+R3
+!i10b 1
+!s100 gbnMgO`THR029OaQlehE;0
+IniTejc`WL`>R9^?a^7;222
+VniTejc`WL`>R9^?a^7;222
+S1
+R0
+R25
+R26
+R27
+L0 2
+R9
+r1
+!s85 0
+31
+R10
+R28
+R29
 !i113 1
 R13
 R14
