@@ -14,14 +14,18 @@ module axi_tb;
 
     //Test1: Get the axi_master_writer and the axi_slave_writer to communicate
     axi_master_writer master_writer(
-        .inf(inf),
+        .inf_aw(inf.ch_addr_write.tx),
+        .inf_dw(inf.ch_data_write.tx),
+        .inf_b(inf.ch_resp.rx),
         .addr_msg(addr_msg_write),
         .data_msg_buffer(data_msg_buffer_tx),
         .resp_msg_buffer_cur(resp_msg_tx),
         .valid_msg_id_cur(valid_msg_id_tx)
     );
     axi_slave_writer slave_writer(
-        .inf(inf),
+        .inf_aw(inf.ch_addr_write.rx),
+        .inf_dw(inf.ch_data_write.rx),
+        .inf_b(inf.ch_resp.tx),
         .data_msg_frontbuffer_cur(data_msg_buffer_rx),
         .valid_msg_id_cur(valid_msg_id_rx)
     );

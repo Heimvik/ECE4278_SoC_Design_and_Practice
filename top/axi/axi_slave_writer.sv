@@ -6,7 +6,9 @@ Outputs: The data, valid message id
 */
 
 module axi_slave_writer(
-    axi4 inf,
+    ch_aw.rx inf_aw,
+    ch_dw.rx inf_dw,
+    ch_b.tx inf_b,
     output axi_utils::data_msg data_msg_frontbuffer_cur[axi_utils::axi_data_buffer_size],
     output int unsigned valid_msg_id_cur
 );
@@ -14,10 +16,6 @@ module axi_slave_writer(
 
     ch_state slave_state_cur = AR;
     ch_state slave_state_nxt = AR;
-
-    //`define inf.ch_addr_write.rx inf.ch_addr_write.rx;
-    //`define inf.ch_data_write.rx inf.ch_data_write.rx;
-    //`define inf.ch_resp.tx inf.ch_resp.tx;
 
     int unsigned target_beats_cur, target_beats_nxt = 0;
     int unsigned beats_cur, beats_nxt = 0;
@@ -31,12 +29,12 @@ module axi_slave_writer(
 
     always_comb begin
         /*
-        inf.ch_resp.ID = '0;
-        inf.ch_resp.RESP = '0;
-        inf.ch_resp.VALID = 0;
+        inf_b.ID = '0;
+        inf_b.RESP = '0;
+        inf_b.VALID = 0;
 
-        inf.ch_addr_write.READY = 0;
-        inf.ch_data_write.READY = 0;
+        inf_aw.READY = 0;
+        inf_dw.READY = 0;
 
         addr_msg_nxt = addr_msg_cur;
 
@@ -47,23 +45,23 @@ module axi_slave_writer(
         case(slave_state_cur)
             AR: begin
                 $display("Slave: STATE AR %0d at %0t", AR,$time);
-                inf.ch_addr_write.READY = 1;
-                if(inf.ch_addr_write.ADDR == dmac_utils::dmac_addr) begin
+                inf_aw.READY = 1;
+                if(inf_aw.ADDR == dmac_utils::dmac_addr) begin
                     //We are being adressed, save it in the adress object
-                    addr_msg_nxt.ID = inf.ch_addr_write.ID;
-                    addr_msg_nxt.ADDR = inf.ch_addr_write.ADDR;
-                    addr_msg_nxt.LEN = inf.ch_addr_write.LEN;
-                    addr_msg_nxt.SIZE = inf.ch_addr_write.SIZE;
-                    addr_msg_nxt.BURST = inf.ch_addr_write.BURST;
-                    addr_msg_nxt.LOCK = inf.ch_addr_write.LOCK;
-                    addr_msg_nxt.CACHE = inf.ch_addr_write.CACHE;
-                    addr_msg_nxt.PROT = inf.ch_addr_write.PROT;
+                    addr_msg_nxt.ID = inf_aw.ID;
+                    addr_msg_nxt.ADDR = inf_aw.ADDR;
+                    addr_msg_nxt.LEN = inf_aw.LEN;
+                    addr_msg_nxt.SIZE = inf_aw.SIZE;
+                    addr_msg_nxt.BURST = inf_aw.BURST;
+                    addr_msg_nxt.LOCK = inf_aw.LOCK;
+                    addr_msg_nxt.CACHE = inf_aw.CACHE;
+                    addr_msg_nxt.PROT = inf_aw.PROT;
 
-                    target_beats_nxt = inf.ch_addr_write.LEN;
-                    valid_msg_id_nxt = inf.ch_addr_write.ID;
+                    target_beats_nxt = inf_aw.LEN;
+                    valid_msg_id_nxt = inf_aw.ID;
                     slave_state_nxt = DR;
                 end
-                if(inf.ch_addr_write.READY && inf.ch_addr_write.VALID) begin
+                if(inf_aw.READY && inf_aw.VALID) begin
                     slave_state_nxt = DR;
                 end else begin
                     slave_state_nxt = AR;
@@ -71,26 +69,26 @@ module axi_slave_writer(
             end
             DR: begin
                 $display("Slave: STATE DR %0d at %0t", DR,$time);
-                inf.ch_addr_write.READY = 0;
+                inf_aw.READY = 0;
 
-                inf.ch_data_write.READY = 1;
-                data_msg_backbuffer_nxt[beats_cur] = '{ID: inf.ch_data_write.ID, DATA: inf.ch_data_write.DATA, STRB: inf.ch_data_write.STRB};
+                inf_dw.READY = 1;
+                data_msg_backbuffer_nxt[beats_cur] = '{ID: inf_dw.ID, DATA: inf_dw.DATA, STRB: inf_dw.STRB};
                 
-                if(inf.ch_data_write.LAST && inf.ch_data_write.READY && inf.ch_data_write.VALID) begin
+                if(inf_dw.LAST && inf_dw.READY && inf_dw.VALID) begin
                     slave_state_nxt = B;
                 end else begin
                     slave_state_nxt = DR;
                 end
             end
             B: begin
-                inf.ch_data_write.READY = 0;
+                inf_dw.READY = 0;
 
-                inf.ch_resp.VALID = 1;
-                inf.ch_resp.ID = valid_msg_id_cur;
-                inf.ch_resp.RESP = '0; //Change accordingly'
+                inf_b.VALID = 1;
+                inf_b.ID = valid_msg_id_cur;
+                inf_b.RESP = '0; //Change accordingly'
                 data_msg_frontbuffer_nxt = data_msg_backbuffer_cur;
                 
-                if(inf.ch_resp.READY) begin
+                if(inf_b.READY) begin
                     slave_state_nxt = AR;
                 end else begin
                     slave_state_nxt = B;
@@ -106,9 +104,9 @@ module axi_slave_writer(
         if (inf.ch_global.rst) begin
             slave_state_cur <= AR;
         end else begin
-            unique if(!inf.ch_data_write.LAST && inf.ch_data_write.READY && inf.ch_data_write.VALID) begin
+            unique if(!inf_dw.LAST && inf_dw.READY && inf_dw.VALID) begin
                 beats_cur <= beats_cur + 1;
-            end else if(!inf.ch_data_write.LAST && !(inf.ch_data_write.READY && inf.ch_data_write.VALID)) begin
+            end else if(!inf_dw.LAST && !(inf_dw.READY && inf_dw.VALID)) begin
                 beats_cur <= beats_cur;
             end else begin
                 beats_cur <= 0;
