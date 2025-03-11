@@ -12,26 +12,21 @@ package DMAC_CFG_UTILS;
     `define DMA_VER_OFFSET `ADDR_WIDTH'h000
     `define DMA_SRC_OFFSET `ADDR_WIDTH'h100
     `define DMA_DST_OFFSET `ADDR_WIDTH'h104
+    `define DMA_LEN_OFFSET `ADDR_WIDTH'h108
     `define DMA_CMD_OFFSET `ADDR_WIDTH'h10C
     `define DMA_STATUS_OFFSET `ADDR_WIDTH'h110
 
     `define DMA_START_BIT 0
     `define DMA_DONE_BIT 0
 
-    //Memory map all registers and reserved areas for easier and better access (in my opinion)
     typedef struct packed{
-        logic [`data_width-1:0] dma_ver;
-        logic [8*(`DMA_SRC_OFFSET-`DMA_VER_OFFSET-4):0] reserved;
-        logic [`data_width-1:0] dma_src;
-        logic [`data_width-1:0] dma_dst;
-        logic [`data_width-1:0] dma_len;
-        logic [`data_width-1:0] dma_cmd;            
-        logic [`data_width-1:0] dma_status; 
+        logic [`DATA_WIDTH-1:0] dma_ver;
+        logic [`DATA_WIDTH-1:0] dma_src;
+        logic [`DATA_WIDTH-1:0] dma_dst;
+        logic [`DATA_WIDTH-1:0] dma_len;
+        logic [`DATA_WIDTH-1:0] dma_cmd;            
+        logic [`DATA_WIDTH-1:0] dma_status; 
     } cfg_reg_t;
-    typedef union packed{
-        cfg_reg_t reg;
-        byte unsigned mem [`DMA_STATUS_OFFSET-`DMA_VER_OFFSET];
-    } cfg_mem_t;
 
 endpackage
     
@@ -42,14 +37,14 @@ module DMAC_CFG
     input   wire                rst_n,  // _n means active low
 
     // AMBA APB interface
-    input   wire                psel_i,
-    input   wire                penable_i,
-    input   wire    [11:0]      paddr_i,
-    input   wire                pwrite_i,
-    input   wire    [31:0]      pwdata_i,
-    output  reg                 pready_o,
-    output  reg     [31:0]      prdata_o,
-    output  reg                 pslverr_o,
+    input   wire                            psel_i,
+    input   wire                            penable_i,
+    input   wire    [11:0]                  paddr_i,
+    input   wire                            pwrite_i,
+    input   wire    [`DATA_WIDTH-1:0]       pwdata_i,
+    output  reg                             pready_o,
+    output  reg     [`DATA_WIDTH-1:0]       prdata_o,
+    output  reg                             pslverr_o,
 
     // configuration registers
     output  reg     [31:0]      src_addr_o,
@@ -59,9 +54,23 @@ module DMAC_CFG
     input   wire                done_i
 );
     import DMAC_CFG_UTILS::*;
-    // Configuration register to read/write           
-    cfg_mem_t cfg = '{default: '0};
+    cfg_reg_t cfg;
+    logic error;
+    
 
+    //----------------------------------------------------------
+    // INIT
+    //----------------------------------------------------------
+    //Flush and initial conditions in the DMAC registers (set the version here?)
+    always @(negedge rst_n) begin
+        cfg.dma_ver = `DATA_WIDTH'h00012025;
+        cfg.dma_src = 0;
+        cfg.dma_dst = 0;
+        cfg.dma_len = 0;
+        cfg.dma_cmd = 0;
+        cfg.dma_status = `DATA_WIDTH'h1;
+    end
+    
     //----------------------------------------------------------
     // Write
     //----------------------------------------------------------
@@ -88,16 +97,21 @@ module DMAC_CFG
     always @(posedge clk) begin
         //If our condition for write is true, clock in pwdata_i into the correct memory location (remember the offset)
         if(wren) begin
-            cfg.mem[paddr_i-`DMA_BASE] = pw_data_i;            
+            case(paddr_i)
+                `DMA_BASE+`DMA_VER_OFFSET: cfg.dma_ver = pwdata_i; //Write restricted?
+                `DMA_BASE+`DMA_SRC_OFFSET: cfg.dma_src = pwdata_i;
+                `DMA_BASE+`DMA_DST_OFFSET: cfg.dma_dst = pwdata_i;
+                `DMA_BASE+`DMA_LEN_OFFSET: cfg.dma_len = pwdata_i;
+                `DMA_BASE+`DMA_CMD_OFFSET: cfg.dma_cmd = pwdata_i;
+                default: error = 1;
+            endcase
         end
     end
 
     wire start;
-    assign start = (paddr_i && `DMA_BASE+`DMA_CMD_OFFSET) && (pw_data_i & 1) && penable_i;
+    assign start = (paddr_i && `DMA_BASE+`DMA_CMD_OFFSET) && (pwdata_i & 1) && penable_i;
 
-    // Read
-    logic [data_width-1:0] rdata;
-
+    
     //----------------------------------------------------------
     // READ
     //----------------------------------------------------------
@@ -110,24 +124,39 @@ module DMAC_CFG
     // penable    : _______----_____________________________
     // pwrite     : ________________________________________
     // reg update : ___----_________________________________ (the reg after the mux)
-    //
-    wire rden;
+    
+
     //Only setup the buffer value in the setup period (whenever we have psel_i and not penable)
-    assign rden = psel_i && !penable && !pwrite_i;
+    logic [`DATA_WIDTH-1:0] rdata;
+    wire rden;
+    assign rden = psel_i && !penable_i && !pwrite_i;
     always @(posedge clk) begin
         if(rden) begin
-            rdata = cfg.mem[paddr_o-`DMA_BASE];
+            case(paddr_i)
+                `DMA_BASE+`DMA_VER_OFFSET: rdata = cfg.dma_ver;
+                `DMA_BASE+`DMA_SRC_OFFSET: rdata = cfg.dma_src;
+                `DMA_BASE+`DMA_DST_OFFSET: rdata = cfg.dma_dst;
+                `DMA_BASE+`DMA_LEN_OFFSET: rdata = cfg.dma_len;
+                `DMA_BASE+`DMA_CMD_OFFSET: rdata = cfg.dma_cmd;
+                `DMA_BASE+`DMA_STATUS_OFFSET: rdata = cfg.dma_status;
+                default: error = 1;
+            endcase
         end
     end
 
-    // output assignments
+    //----------------------------------------------------------
+    // ERROR HANFLING
+    //----------------------------------------------------------
+    //Alignemnt, reserved region writes, checking, etc
+
+
     assign  pready_o            = 1'b1;
     assign  prdata_o            = rdata;
-    assign  pslverr_o           = 1'b0;
+    assign  pslverr_o           = error;
 
-    assign  src_addr_o          = src_addr;
-    assign  dst_addr_o          = dst_addr;
-    assign  byte_len_o          = byte_len;
+    assign  src_addr_o          = cfg.dma_src;
+    assign  dst_addr_o          = cfg.dma_dst;
+    assign  byte_len_o          = cfg.dma_len;
     assign  start_o             = start;
 
 endmodule
