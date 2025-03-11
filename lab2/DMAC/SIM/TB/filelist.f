@@ -1,0 +1,3 @@
+-sverilog $LAB_PATH/SIM/TB/timescale.v
+-sverilog $LAB_PATH/SIM/TB/AXI_INTF.sv
+-sverilog $LAB_PATH/SIM/TB/DMAC_CFG_TB.sv
