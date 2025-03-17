@@ -10,7 +10,7 @@ cModel Technology
 dC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/SystemVerilog_bootcamp/DMAC
 YAPB
 Z0 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
-Z1 !s110 1741681646
+Z1 !s110 1742213524
 !i10b 1
 !s100 =U2^]UhNiJb@SX:^6P<A@2
 Ich;`4`6TB@n_1Tz>aI^oH1
@@ -26,25 +26,25 @@ Z4 OV;L;10.5b;63
 r1
 !s85 0
 31
-Z5 !s108 1741681646.000000
+!s108 1742213524.000000
 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/AXI_INTF.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/AXI_INTF.sv|
 !i113 1
-Z6 o-work work -sv
-Z7 tCvgOpt 0
+Z5 o-work work -sv
+Z6 tCvgOpt 0
 n@a@p@b
 vDMAC_CFG
 R0
 DXx4 work 14 DMAC_CFG_UTILS 0 22 ^Rn8kRleA`WV@gMJX:R@h2
-R1
+Z7 !s110 1742213523
 !i10b 1
-!s100 aB;WCcUQDV]Amg?ejN4i41
-I8Qo>KzE6oiC=:OTH[C^I]0
+!s100 DOZdPOF=Yi>CSHDloikA@1
+Ioo:b2cHIV`7VHFS^c2c0T2
 R2
 !s105 DMAC_CFG_sv_unit
 S1
 R3
-Z8 w1741681638
+Z8 w1742213517
 Z9 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv
 Z10 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv
 L0 34
@@ -52,12 +52,12 @@ R4
 r1
 !s85 0
 31
-R5
-Z11 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv|
-Z12 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv|
+Z11 !s108 1742213523.000000
+Z12 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv|
+Z13 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv|
 !i113 1
+R5
 R6
-R7
 n@d@m@a@c_@c@f@g
 vDMAC_CFG_TB
 R0
@@ -69,7 +69,7 @@ R2
 !s105 DMAC_CFG_TB_sv_unit
 S1
 R3
-w1741681529
+w1742211670
 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/DMAC_CFG_TB.sv
 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/DMAC_CFG_TB.sv
 L0 8
@@ -77,16 +77,16 @@ R4
 r1
 !s85 0
 31
-R5
+R11
 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/DMAC_CFG_TB.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/DMAC_CFG_TB.sv|
 !i113 1
+R5
 R6
-R7
 n@d@m@a@c_@c@f@g_@t@b
 XDMAC_CFG_UTILS
 R0
-R1
+R7
 !i10b 1
 !s100 3`7U_mF9oG_M1S:2g:_YS1
 I^Rn8kRleA`WV@gMJX:R@h2
@@ -101,10 +101,10 @@ R4
 r1
 !s85 0
 31
-R5
 R11
 R12
+R13
 !i113 1
+R5
 R6
-R7
 n@d@m@a@c_@c@f@g_@u@t@i@l@s

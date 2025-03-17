@@ -1,4 +1,11 @@
-{C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/AXI_INTF.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/AXI_INTF.sv}
+{C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/DMAC_CFG_TB.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/DMAC_CFG_TB.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module DMAC_CFG_TB
+
+Top level modules:
+	DMAC_CFG_TB
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/AXI_INTF.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/SIM/TB/AXI_INTF.sv}
 Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
 -- Compiling interface APB
 
