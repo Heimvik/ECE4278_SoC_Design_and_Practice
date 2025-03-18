@@ -4,8 +4,9 @@
 // - Jungrae Kim <dale40@skku.edu>
 
 package DMAC_CFG_UTILS;
-    `define ADDR_WIDTH 12
-    `define DATA_WIDTH 32
+    `define ADDR_WIDTH 12 //For now, as we have no higher module to put the base address in yet
+    `define DATA_WIDTH 32 //For now, as we have no higher module to put the base address in yet
+
 
     `define DMA_BASE `ADDR_WIDTH'h000 //For now, as we have no higher module to put the base address in yet
 
