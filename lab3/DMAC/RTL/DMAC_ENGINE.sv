@@ -119,14 +119,12 @@ module DMAC_ENGINE
                     src_addr_n = src_addr_i;
                     dst_addr_n = dst_addr_i;
                     cnt_n = byte_len_i;
-
                     state_n = S_RREQ;
                 end else begin
                     state_n = S_IDLE;
                 end
             end
             S_RREQ: begin
-                //Write ADDR on AR channel
                 arvalid = 1;
                 if(arready_i && arvalid) begin
                     src_addr_n = src_addr + 4;
@@ -136,9 +134,8 @@ module DMAC_ENGINE
                 end
             end
             S_RDATA: begin
-                //Read DATA on AR channel
                 rready = 1;
-                if(rready && rvalid_i && rlast_i) begin
+                if(rready && rvalid_i) begin
                     data_buf_n = rdata_i;
                     state_n = S_WREQ;
                 end else begin
@@ -146,7 +143,6 @@ module DMAC_ENGINE
                 end
             end
             S_WREQ: begin
-                //Write ADDR on AW channel
                 awvalid = 1;
                 if(awready_i && awvalid) begin
                     dst_addr_n = dst_addr + 4;
@@ -157,16 +153,15 @@ module DMAC_ENGINE
                 end
             end
             S_WDATA: begin
-                //Write DATA on W channel
                 wvalid = 1;
-                if(wready_i && wvalid && wlast_o) begin
+                if(wready_i && wvalid) begin
                     if(cnt == 0) begin
-                        state_n = IDLE;
+                        state_n = S_IDLE;
                     end else begin
-                        state_n = RREQ;
+                        state_n = S_RREQ;
                     end
                 end else begin
-                    state_n = RREQ;
+                    state_n = S_RREQ;
                 end
             end
         endcase

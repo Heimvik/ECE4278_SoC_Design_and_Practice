@@ -12,13 +12,4 @@ Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  
 Top level modules:
 	--none--
 
-} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC Design and Practice/lab2/DMAC/RTL/DMAC_CFG.sv}
-Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
--- Compiling package DMAC_CFG_UTILS
--- Compiling module DMAC_CFG
--- Importing package DMAC_CFG_UTILS
-
-Top level modules:
-	DMAC_CFG
-
 } {} {}}
