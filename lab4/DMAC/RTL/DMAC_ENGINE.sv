@@ -169,7 +169,7 @@ module DMAC_ENGINE
                     //Same here: Set the scene for the next time by incrementing the destionation address the same number of times as we did with src
                     dst_addr_n = dst_addr + (beats+1)*4;
                     cnt_n = cnt - (beats+1)*4;
-                    wcnt_n = beats;
+                    wcnt_n = beats; 
                     state_n = S_WDATA;
                 end
             end
