@@ -77,7 +77,7 @@ module DMAC_ENGINE
                                 wlast,
                                 done;
     
-    logic                       beats;
+    logic   [3:0]               beats, beats_n;
 
     wire                        fifo_full,
                                 fifo_empty;
@@ -96,6 +96,8 @@ module DMAC_ENGINE
             cnt                 <= 16'd0;
 
             wcnt                <= 4'd0;
+
+            beats               <= 4'd0;
         end
         else begin
             state               <= state_n;
@@ -105,6 +107,8 @@ module DMAC_ENGINE
             cnt                 <= cnt_n;
 
             wcnt                <= wcnt_n;
+
+            beats               <= beats_n;
         end
     
 
@@ -128,7 +132,7 @@ module DMAC_ENGINE
         fifo_wren = 0;
         fifo_rden = 0;
 
-        beats = (cnt >= 'd64) ? 4'hF: cnt[5:2]-4'h1;
+        beats_n = beats;
 
         case(state)
             S_IDLE: begin
@@ -137,6 +141,7 @@ module DMAC_ENGINE
                     src_addr_n = src_addr_i;
                     dst_addr_n = dst_addr_i;
                     cnt_n = byte_len_i;
+                    beats_n = (cnt >= 'd64) ? 4'hF: cnt[5:2]-4'h1;
 
                     state_n = S_RREQ;
                 end
@@ -145,7 +150,7 @@ module DMAC_ENGINE
                 arvalid = 1;
                 if(arready_i) begin
                     //Here: Set the scene for next time by incrementing the scr_addr by the number of bytes (beats*4) we are sending the current fsm-run
-                    src_addr_n = src_addr + beats*4;
+                    src_addr_n = src_addr + (beats+1)*4;
                     state_n = S_RDATA;
                 end
             end
@@ -162,8 +167,8 @@ module DMAC_ENGINE
                 awvalid = 1;
                 if(awready_i) begin
                     //Same here: Set the scene for the next time by incrementing the destionation address the same number of times as we did with src
-                    dst_addr_n = dst_addr + beats*4;
-                    cnt_n = cnt - beats*4;
+                    dst_addr_n = dst_addr + (beats+1)*4;
+                    cnt_n = cnt - (beats+1)*4;
                     wcnt_n = beats;
                     state_n = S_WDATA;
                 end
@@ -177,6 +182,7 @@ module DMAC_ENGINE
                         wcnt_n = wcnt-1;
                     end else begin
                         if(cnt != 0) begin
+                            beats_n = (cnt >= 'd64) ? 4'hF: cnt[5:2]-4'h1;                            
                             state_n = S_RREQ;
                         end else begin
                             state_n = S_IDLE;
@@ -206,7 +212,7 @@ module DMAC_ENGINE
 
     assign  awid_o                  = 4'd0;
     assign  awaddr_o                = dst_addr;
-    assign  awlen_o                 = (cnt >= 'd64) ? 4'hF: cnt[5:2]-4'h1;
+    assign  awlen_o                 = beats;
     assign  awsize_o                = 3'b010;   // 4 bytes per transfer
     assign  awburst_o               = 2'b01;    // incremental
     assign  awvalid_o               = awvalid;
@@ -222,7 +228,7 @@ module DMAC_ENGINE
     assign  arvalid_o               = arvalid;
     assign  araddr_o                = src_addr;
     assign  arid_o                  = 4'd0;
-    assign  arlen_o                 = (cnt >= 'd64) ? 4'hF: cnt[5:2]-4'h1;
+    assign  arlen_o                 = beats;
     assign  arsize_o                = 3'b010;   // 4 bytes per transfer
     assign  arburst_o               = 2'b01;    // incremental
     assign  arvalid_o               = arvalid;
