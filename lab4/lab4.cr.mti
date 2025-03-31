@@ -1,0 +1,54 @@
+{C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_TOP.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_TOP.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module DMAC_TOP
+
+Top level modules:
+	DMAC_TOP
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/timescale.v} {1 {vlog -work work -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/timescale.v}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/DMAC_TOP_TB.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/DMAC_TOP_TB.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module DMAC_TOP_TB
+
+Top level modules:
+	DMAC_TOP_TB
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_SLAVE.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_SLAVE.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module AXI_SLAVE
+
+Top level modules:
+	AXI_SLAVE
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_FIFO.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_FIFO.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module DMAC_FIFO
+
+Top level modules:
+	DMAC_FIFO
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_CFG.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_CFG.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module DMAC_CFG
+
+Top level modules:
+	DMAC_CFG
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_TYPEDEF.svh} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_TYPEDEF.svh}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+
+} {} {}} {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_INTF.sv} {1 {vlog -work work -sv -stats=none {C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_INTF.sv}
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling interface AXI_AW_CH
+-- Compiling interface AXI_W_CH
+-- Compiling interface AXI_B_CH
+-- Compiling interface AXI_AR_CH
+-- Compiling interface AXI_R_CH
+-- Compiling interface APB
+
+Top level modules:
+	--none--
+
+} {} {}}

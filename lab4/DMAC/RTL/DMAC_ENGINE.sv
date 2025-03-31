@@ -76,6 +76,8 @@ module DMAC_ENGINE
                                 wvalid,
                                 wlast,
                                 done;
+    
+    logic                       beats;
 
     wire                        fifo_full,
                                 fifo_empty;
@@ -104,16 +106,85 @@ module DMAC_ENGINE
 
             wcnt                <= wcnt_n;
         end
-
+    
 
     // this block programs output values and next register values
     // based on states.
     always_comb begin
-        // **********************    
-        // **********************    
-        // FILL YOUR CODE HERE
-        // **********************    
-        // **********************    
+        //Default values (hinder inferred latches)
+        state_n = state;
+        src_addr_n = src_addr;
+        dst_addr_n = dst_addr;
+        cnt_n = cnt;
+        wcnt_n = wcnt;
+        
+        arvalid = 0;
+        rready = 0;
+        awvalid = 0;
+        wvalid = 0;
+        wlast = 0;
+        done = 0;
+
+        fifo_wren = 0;
+        fifo_rden = 0;
+
+        beats = (cnt >= 'd64) ? 4'hF: cnt[5:2]-4'h1;
+
+        case(state)
+            S_IDLE: begin
+                done = 1;
+                if(start_i && byte_len_i != 0) begin
+                    src_addr_n = src_addr_i;
+                    dst_addr_n = dst_addr_i;
+                    cnt_n = byte_len_i;
+
+                    state_n = S_RREQ;
+                end
+            end
+            S_RREQ: begin
+                arvalid = 1;
+                if(arready_i) begin
+                    //Here: Set the scene for next time by incrementing the scr_addr by the number of bytes (beats*4) we are sending the current fsm-run
+                    src_addr_n = src_addr + beats*4;
+                    state_n = S_RDATA;
+                end
+            end
+            S_RDATA: begin
+                rready = 1;
+                if(rvalid_i) begin
+                    fifo_wren = 1;
+                    if(rlast_i) begin
+                        state_n = S_WREQ;
+                    end
+                end
+            end
+            S_WREQ: begin
+                awvalid = 1;
+                if(awready_i) begin
+                    //Same here: Set the scene for the next time by incrementing the destionation address the same number of times as we did with src
+                    dst_addr_n = dst_addr + beats*4;
+                    cnt_n = cnt - beats*4;
+                    wcnt_n = beats;
+                    state_n = S_WDATA;
+                end
+            end
+            S_WDATA: begin
+                wvalid = 1;
+                fifo_rden = 1;
+                wlast = (wcnt == 0);
+                if(wready_i) begin
+                    if(!wlast) begin
+                        wcnt_n = wcnt-1;
+                    end else begin
+                        if(cnt != 0) begin
+                            state_n = S_RREQ;
+                        end else begin
+                            state_n = S_IDLE;
+                        end
+                    end
+                end
+            end
+        endcase
     end
 
     DMAC_FIFO   u_fifo
