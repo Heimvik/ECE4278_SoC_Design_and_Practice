@@ -149,7 +149,7 @@ module DMAC_ENGINE
             S_RREQ: begin
                 arvalid = 1;
                 if(arready_i) begin
-                    //Here: Set the scene for next time by incrementing the scr_addr by the number of bytes (beats*4) we are sending the current fsm-run
+                    //Here: Set the scene for next time by incrementing the scr_addr by the number of bytes ((beats+1)*4) we are sending the current fsm-run
                     src_addr_n = src_addr + (beats+1)*4;
                     state_n = S_RDATA;
                 end
@@ -182,6 +182,7 @@ module DMAC_ENGINE
                         wcnt_n = wcnt-1;
                     end else begin
                         if(cnt != 0) begin
+                            //If we are not done yet, update how many beats the next bust will have
                             beats_n = (cnt >= 'd64) ? 4'hF: cnt[5:2]-4'h1;                            
                             state_n = S_RREQ;
                         end else begin

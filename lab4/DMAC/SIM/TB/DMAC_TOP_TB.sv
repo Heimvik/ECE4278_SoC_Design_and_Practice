@@ -194,8 +194,8 @@ module DMAC_TOP_TB ();
         $display("===================================================");
         test_dma(src, dst, len);
 
-        src = 'h1234_1234;
-        dst = 'hABCD_ABCC;
+        src = 'h0000_1234;
+        dst = 'h0000_ABCC;
         len = 'h0F00;
         $display("===================================================");
         $display("= 2nd trial (long transfer)");
@@ -203,8 +203,8 @@ module DMAC_TOP_TB ();
         $display("===================================================");
         test_dma(src, dst, len);
 
-        src = 'h4278_0000;
-        dst = 'h4278_1000;
+        src = 'h0000_0000;
+        dst = 'h0000_1000;
         len = 'h0F10;
         $display("===================================================");
         $display("= 3rd trial (long transfer-2)");
