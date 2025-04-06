@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source ../../scripts/common.sh
+
+COV_DIR="$PWD/VDB"
+COV_OPTIONS="-cm line+cond+fsm+tgl+branch -cm_dir $COV_DIR"
+
+if [ -e $RUN_DIR/simv ];
+then
+	cd $RUN_DIR
+	./simv $COV_OPTIONS
+else
+	echo "Compile file does not exist"
+	exit 1
+fi

@@ -1,0 +1,1 @@
+\rm -rf VDB.vdb; ./run.compile4cov ; ./run.sim4cov ; urg -dir VDB.vdb/
