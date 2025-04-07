@@ -333,9 +333,8 @@ module DMAC_TOP_TB ();
             apb_cov_inst.sample();
 
     // Functional coverage
-    // Fill
-    // your
-    // code
-    // here
-
+    covergroup awlen_cov;
+        AWLEN_CP: coverpoint aw_ch.awlen {
+            bins LEN
+        }
 endmodule
