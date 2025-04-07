@@ -194,8 +194,8 @@ module DMAC_TOP_TB ();
         $display("===================================================");
         test_dma(src, dst, len);
 
-        src = 'h1234_1234;
-        dst = 'h5678_5678;
+        src = 'h0000_1234;
+        dst = 'h0000_5678;
         len = 'h0F00;
         $display("===================================================");
         $display("= 2nd trial (long transfer)");
@@ -362,5 +362,5 @@ module DMAC_TOP_TB ();
         if (rst_n && aw_ch.awready && aw_ch.awvalid) begin
             aw_cov_inst.sample(); //Sample coverage of awlen
         end
-        
+
 endmodule
