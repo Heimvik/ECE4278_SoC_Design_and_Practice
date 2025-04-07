@@ -10,7 +10,7 @@ cModel Technology
 dC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab3
 YAPB
 Z0 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
-Z1 !s110 1743475239
+Z1 !s110 1743508469
 !i10b 1
 !s100 _8[IlS[SIEST5n>I3W@zl2
 I8cm[Rc2_;>F_BKC06El@F2
@@ -26,7 +26,7 @@ Z8 OV;L;10.5b;63
 r1
 !s85 0
 31
-Z9 !s108 1743475239.000000
+Z9 !s108 1743508469.000000
 Z10 !s107 C:\Users\cmhei\OneDrive\Dokumenter\Semester 8\ECE4278 SoC design and practice\lab4\DMAC\SIM\TB\..\TB\AXI_TYPEDEF.svh|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_INTF.sv|
 Z11 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_INTF.sv|
 !i113 1
@@ -135,7 +135,7 @@ R13
 n@a@x@i_@r_@c@h
 vAXI_SLAVE
 R0
-Z14 !s110 1743475240
+R1
 !i10b 1
 !s100 QDYW05KR5;A4fYVj5L>ZR0
 I>;gbIHVO9b6H@`FH]2CAb1
@@ -143,7 +143,7 @@ R2
 !s105 AXI_SLAVE_sv_unit
 S1
 R4
-Z15 w1743399369
+Z14 w1743399369
 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_SLAVE.sv
 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_SLAVE.sv
 L0 3
@@ -151,7 +151,7 @@ R8
 r1
 !s85 0
 31
-Z16 !s108 1743475240.000000
+R9
 !s107 C:\Users\cmhei\OneDrive\Dokumenter\Semester 8\ECE4278 SoC design and practice\lab4\DMAC\SIM\TB\..\TB\AXI_TYPEDEF.svh|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_SLAVE.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/AXI_SLAVE.sv|
 !i113 1
@@ -185,7 +185,7 @@ R13
 n@a@x@i_@w_@c@h
 vDMAC_CFG
 R0
-R1
+!s110 1743508468
 !i10b 1
 !s100 <LCL[XgMG6??HRnCGCzGU1
 IN4Cz>U_O43E18XP>^5C4L0
@@ -193,7 +193,7 @@ R2
 !s105 DMAC_CFG_sv_unit
 S1
 R4
-R15
+R14
 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_CFG.sv
 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_CFG.sv
 L0 6
@@ -201,7 +201,7 @@ R8
 r1
 !s85 0
 31
-!s108 1743475238.000000
+Z15 !s108 1743508468.000000
 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_CFG.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_CFG.sv|
 !i113 1
@@ -226,7 +226,7 @@ R8
 r1
 !s85 0
 31
-R9
+R15
 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_ENGINE.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_ENGINE.sv|
 !i113 1
@@ -243,7 +243,7 @@ R2
 !s105 DMAC_FIFO_sv_unit
 S1
 R4
-R15
+R14
 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_FIFO.sv
 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_FIFO.sv
 L0 1
@@ -268,7 +268,7 @@ R2
 !s105 DMAC_TOP_sv_unit
 S1
 R4
-R15
+R14
 8C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_TOP.sv
 FC:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/RTL/DMAC_TOP.sv
 L0 6
@@ -285,7 +285,7 @@ R13
 n@d@m@a@c_@t@o@p
 vDMAC_TOP_TB
 R0
-R14
+!s110 1743508470
 !i10b 1
 !s100 P2I_V?Si=z[N3?_=lUcMm0
 IUXim901AZK:hnU2UAocc>0
@@ -301,7 +301,7 @@ R8
 r1
 !s85 0
 31
-R16
+!s108 1743508470.000000
 !s107 C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/DMAC_TOP_TB.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/cmhei/OneDrive/Dokumenter/Semester 8/ECE4278 SoC design and practice/lab4/DMAC/SIM/TB/DMAC_TOP_TB.sv|
 !i113 1
