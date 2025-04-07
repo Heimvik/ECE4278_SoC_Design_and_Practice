@@ -333,8 +333,34 @@ module DMAC_TOP_TB ();
             apb_cov_inst.sample();
 
     // Functional coverage
-    covergroup awlen_cov;
-        AWLEN_CP: coverpoint aw_ch.awlen {
-            bins LEN
+    covergroup aw_cov; //The covergroup for AXI AW channel
+        AWLEN_CP: coverpoint aw_ch.awlen { //The signal we want to check for coverage
+            //Here we specify the bins to put the values into when out aw_ch.awlen signal is sampled
+            bins LEN01 = {0};
+            bins LEN02 = {1}; 
+            bins LEN03 = {2};
+            bins LEN04 = {3};
+            bins LEN05 = {4};
+            bins LEN06 = {5};
+            bins LEN07 = {6};
+            bins LEN08 = {7};
+            bins LEN09 = {8};
+            bins LEN10 = {9};
+            bins LEN11 = {10};
+            bins LEN12 = {11};
+            bins LEN13 = {12};
+            bins LEN14 = {13};
+            bins LEN15 = {14};
+            bins LEN16 = {15};
         }
+    endgroup
+
+    //Now we have our covergroup, with all the bins in it, but still miss instanciation and sampling
+    aw_cov aw_cov_inst = new();
+
+    always @(posedge clk)
+        if (rst_n && aw_ch.awready && aw_ch.awvalid) begin
+            aw_cov_inst.sample(); //Sample coverage of awlen
+        end
+        
 endmodule
