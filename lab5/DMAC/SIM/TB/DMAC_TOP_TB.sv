@@ -355,7 +355,7 @@ module DMAC_TOP_TB ();
         }
     endgroup
 
-    //Now we have our covergroup, with all the bins in it, but still miss instanciation and sampling
+    //Now we have our covergroup, with all the bins in it, but still miss instansiation and sampling
     aw_cov aw_cov_inst = new();
 
     always @(posedge clk)
