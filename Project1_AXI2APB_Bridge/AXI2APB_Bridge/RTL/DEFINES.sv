@@ -6,16 +6,19 @@ package bridge_utils;
 
     typedef enum {READ, WRITE} bb_type_t;
     
-    typedef enum {R_IDLE, R_BUSY, R_SWITCH} axi_r_out_state_t;
-    typedef enum {R_DISABLE, R_GET_ADDR_DATA, R_GET_RESP} axi_r_in_state_t;
+    //For reader
+    typedef enum {R_DISABLE, R_GET_ADDR_DATA, R_GET_RESP} rd_cmd_t;
+    typedef enum {R_IDLE, R_BUSY, R_SWITCH} rd_info_t;
 
-    typedef enum {W_IDLE, W_BUSY, W_SWITCH} axi_r_out_state_t;
-    typedef enum {W_DISABLE, W_GET_ADDR_DATA, R_GET_RESP} axi_r_in_state_t;
+    //For writer
+    typedef enum {W_DISABLE, W_GET_ADDR, W_GET_DATA} wr_cmd_t;
+    typedef enum {W_IDLE, W_BUSY, W_SWITCH} wr_info_t;
 
     typedef struct packed{
         logic [ID_WIDTH-1:0] id;            //ID of the transaction
         logic [ADDR_WIDTH-1:0] addr;        //Address the bridgebuffer is addressing
         logic [7:0] len;                    //How many words the transfer contains
+        logic [1:0] burst;                  //Burst type (FIXED, INCR)
         logic [2:0] size;                   //How many byte each word contains
     } addr_info_t;
 
