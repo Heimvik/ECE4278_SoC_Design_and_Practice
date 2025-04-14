@@ -24,7 +24,7 @@ package bridge_utils;
 
     typedef struct packed {
         logic [ID_WIDTH-1:0] id;            //ID of the transaction
-        logic [LGS2_NUM_FIFOS:0] fifo_ptr;  //Pointer to the FIFO that holds the data
+        //logic [LGS2_NUM_FIFOS:0] fifo_ptr;  //Pointer to the FIFO that holds the data
         logic [1:0] resp;                   //A potential response on an read
     } data_info_t;
 

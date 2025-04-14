@@ -83,7 +83,8 @@ module slave_axi_writer #(
                 i_inf.rdata_ready = 1'b1;
                 i_inf.wr_info = R_BUSY;
                 if(wready) begin
-                    
+                    //Go for INCR always here, just with a counter (might be single anyways)
+                    //NB null indexing!
                 end else begin
                     next_state = R;
                 end

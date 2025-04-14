@@ -14,11 +14,6 @@ interface axi_reader_inf #(
     logic addr_info_valid;  //Input to middle register
     addr_info_t addr_info;
 
-    logic data_info_valid;  //Input to middle register
-    addr_info_t data_info;
-
-    resp_info_t resp_info;  //Output from middle register
-
     //Actual data
     logic data_valid;
     logic [DATA_WIDTH-1:0] data;
@@ -34,9 +29,7 @@ interface axi_reader_inf #(
                    output rd_cmd);
 
     modport addr_info_reg(input addr_info_valid, addr_info);
-    modport data_info_reg(input data_info_valid, data_info);
     modport data_fifo(input data_valid, data);
-    modport resp_info_reg(output resp_info);
 endinterface
 
 //Internal interface toward the axi_writer
@@ -54,8 +47,6 @@ interface axi_writer_inf #(
     logic addr_info_valid;  //Input to middle register
     addr_info_t addr_info;  
 
-    data_info_t data_info;  //Output from middle register
-
     //Actual data
     logic data_ready;
     logic [DATA_WIDTH-1:0] data;
@@ -63,13 +54,11 @@ interface axi_writer_inf #(
     modport writer(input wr_cmd,
                    output wr_info, 
                    output addr_info_valid, addr_info, 
-                   input data_info,
                    output data_ready, input data);
 
     modport engine(input wr_info,
                    output wr_cmd);
 
     modport addr_info_reg(input addr_info_valid, addr_info);
-    modport data_info_reg(output data_info);
     modport data_fifo(input data_ready, output data);
 endinterface

@@ -42,10 +42,13 @@ module slave_axi_reader #(
     //Internal registers
     r_state state_cur, state_nxt;
 
+    //States about the current transfer
+    logic [ID_WIDTH-1:0] id_cur, id_nxt;
+    resp_info_t resp_info_cur, resp_info_nxt;
+
     always_comb begin
         i_inf.addr_info_valid = 1'b0;
         i_inf.data_valid = 1'b0;
-        i_inf.data_info_valid = 1'b0;
 
         awready = 1'b0;
         wready = 1'b0;
@@ -65,6 +68,7 @@ module slave_axi_reader #(
                 awready = 1'b1;
                 i_inf.rd_info = R_BUSY;
                 if(awvalid) begin
+                    id_cur = awid;
                     i_inf.addr_info_valid = 1'b1;
                     next_state = R;
                 end else begin
@@ -76,8 +80,8 @@ module slave_axi_reader #(
                 wready = 1'b1;
                 i_inf.rd_info = R_BUSY;
                 if(wvalid) begin
+                    data_info_nxt.id = wid;                    
                     i_inf.data_valid = 1'b1;
-                    i_inf.data_info_valid = 1'b1;
                     if(wlast) begin
                         next_state = WAIT_RESP;
                     end else begin
@@ -112,12 +116,19 @@ module slave_axi_reader #(
 
     always_ff @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            state <= IDLE;
+            state_cur <= IDLE;
+            id_cur <= ID_WIDTH'b0;
+            resp_info_cur <= '{ID: ID_WIDTH'b0, RESP: 2'b0};
         end else begin
-            state <= next_state;
+            state_cur <= next_state;
+            id_cur = id_nxt;
+            resp_info_cur = resp_info_nxt;
         end
     end
 
+    //Continuous assignment for local signals
+    assign data_info_nxt = '{ID: id_cur, RESP: 0};
+    assign resp_info_nxt = '{ID: id_cur, RESP: 0};
 
     //Continous assignment for driving internal interface
     assign i_inf.addr_info.id = awid;
@@ -127,10 +138,9 @@ module slave_axi_reader #(
     assign i_inf.addr_info.size = awsize;
 
     assign i_inf.data = wdata;
-    assign i_inf.data_info.id = wid;
 
     //Continous assignment for driving the external interface
-    assign bid = i_inf.resp_info.id;
-    assign bresp = i_inf.resp_info.resp;
+    assign bid = resp_info.id;
+    assign bresp = resp_info.resp;
 
 endmodule
