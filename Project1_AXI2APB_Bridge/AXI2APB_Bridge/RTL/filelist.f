@@ -1,0 +1,2 @@
+-sverilog $LAB_PATH/RTL/AXI2APB_TOP.sv
+-sverilog $LAB_PATH/RTL/BRIDGE_FIFO.sv
