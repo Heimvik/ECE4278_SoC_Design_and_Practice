@@ -122,7 +122,7 @@ module slave_axi_reader #(
         endcase
     end
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk || negedge rst_n) begin
         if(!rst_n) begin
             state_cur <= IDLE;
             id_cur <= {ID_WIDTH{1'b0}};
