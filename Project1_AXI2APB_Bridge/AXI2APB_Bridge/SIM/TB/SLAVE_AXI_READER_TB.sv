@@ -8,13 +8,14 @@ module slave_axi_reader_tb();
     parameter ADDR_WIDTH = 32;
     parameter DATA_WIDTH = 32;
     parameter CLK_PERIOD = 10; // 100 MHz
+    parameter FIFO_DEPTH_LG2 = 4; // 16 entries
 
     // Signals
     logic clk;
     logic rst_n;
 
     // AXI signals
-    logic [3:0] awid;
+    logic [ID_WIDTH-1:0] awid;
     logic [ADDR_WIDTH-1:0] awaddr;
     logic [3:0] awlen;
     logic [2:0] awsize;
@@ -36,6 +37,13 @@ module slave_axi_reader_tb();
 
     // Internal interface
     axi_reader_inf #(ADDR_WIDTH, DATA_WIDTH) i_inf();
+
+    // FIFO signals
+    logic fifo_full, fifo_empty;
+    logic fifo_wren;
+    logic [DATA_WIDTH-1:0] fifo_wdata;
+    logic fifo_rden;
+    logic [DATA_WIDTH-1:0] fifo_rdata;
 
     // DUT instantiation
     slave_axi_reader #(
@@ -63,6 +71,26 @@ module slave_axi_reader_tb();
         .bready(bready),
         .i_inf(i_inf.reader)
     );
+
+    // FIFO instantiation
+    BRIDGE_FIFO #(
+        .DEPTH_LG2(FIFO_DEPTH_LG2),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) data_fifo (
+        .clk(clk),
+        .rst_n(rst_n),
+        .full_o(fifo_full),
+        .wren_i(fifo_wren),
+        .wdata_i(fifo_wdata),
+        .empty_o(fifo_empty),
+        .rden_i(fifo_rden),
+        .rdata_o(fifo_rdata)
+    );
+
+    // Connect FIFO to reader interface
+    assign fifo_wren = i_inf.data_write;
+    assign fifo_wdata = i_inf.data;
+    assign fifo_rden = 1'b0; // Not used in reader testbench
 
     // Clock generation
     initial begin
@@ -118,13 +146,16 @@ module slave_axi_reader_tb();
             
             wait (wready);
             @(negedge clk);
+            // Check FIFO write happened correctly
             if (i_inf.data_write) begin
-                if (i_inf.data !== test_data[i]) begin
-                    $display("ERROR: Data mismatch at index %0d. Expected %h, got %h", 
-                             i, test_data[i], i_inf.data);
+                if (fifo_wdata !== test_data[i]) begin
+                    $display("ERROR: Data written to FIFO mismatch at index %0d. Expected %h, got %h", 
+                             i, test_data[i], fifo_wdata);
                     error_count++;
-                end else begin
-                    $display("Data %0d received correctly: %h", i, i_inf.data);
+                end
+                if (fifo_full) begin
+                    $display("ERROR: FIFO overflow during write");
+                    error_count++;
                 end
             end
         end
@@ -231,8 +262,8 @@ module slave_axi_reader_tb();
     // Monitor
     initial begin
         $timeformat(-9, 0, " ns", 6);
-        $monitor("At time %t: state=%s, data_write=%b, data=%h", 
-                 $time, dut.state_cur.name(), i_inf.data_write, i_inf.data);
+        $monitor("At time %t: state=%s, data_write=%b, fifo_wdata=%h, fifo_full=%b", 
+                 $time, dut.state_cur.name(), i_inf.data_write, fifo_wdata, fifo_full);
     end
 
 endmodule

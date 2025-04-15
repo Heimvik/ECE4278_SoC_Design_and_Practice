@@ -7,6 +7,7 @@ module slave_axi_writer_tb();
     parameter ADDR_WIDTH = 32;
     parameter DATA_WIDTH = 32;
     parameter CLK_PERIOD = 10; // 100 MHz
+    parameter FIFO_DEPTH_LG2 = 4; // 16 entries
 
     logic clk;
     logic rst_n;
@@ -28,6 +29,13 @@ module slave_axi_writer_tb();
 
     // Internal interface
     axi_writer_inf #(ADDR_WIDTH, DATA_WIDTH) i_inf();
+
+    // FIFO signals
+    logic fifo_full, fifo_empty;
+    logic fifo_wren;
+    logic [DATA_WIDTH-1:0] fifo_wdata;
+    logic fifo_rden;
+    logic [DATA_WIDTH-1:0] fifo_rdata;
 
     // DUT instantiation
     slave_axi_writer #(
@@ -51,6 +59,25 @@ module slave_axi_writer_tb();
         .rready(rready),
         .i_inf(i_inf.writer)
     );
+
+    // FIFO instantiation
+    BRIDGE_FIFO #(
+        .DEPTH_LG2(FIFO_DEPTH_LG2),
+        .DATA_WIDTH(DATA_WIDTH)
+    ) data_fifo (
+        .clk(clk),
+        .rst_n(rst_n),
+        .full_o(fifo_full),
+        .wren_i(fifo_wren),
+        .wdata_i(fifo_wdata),
+        .empty_o(fifo_empty),
+        .rden_i(fifo_rden),
+        .rdata_o(fifo_rdata)
+    );
+
+    // Connect FIFO to writer interface
+    assign fifo_rden = i_inf.data_read;
+    assign i_inf.data = fifo_rdata;
 
     // Clock generation
     initial begin
@@ -121,19 +148,19 @@ module slave_axi_writer_tb();
             end
         end
         
-        @(posedge clk);
         rready = 1'b0;
     endtask
 
-    //Sim inteernal fifo here
-    task provide_fifo_data(input [3:0] len);
-        // Wait for data_read to be asserted
+    // Task to fill FIFO with test data
+    task fill_fifo(input [3:0] len);
+        @(posedge clk);
         for (int i = 0; i <= len; i++) begin
-            wait (i_inf.data_read);
-            i_inf.data = test_data[i];
+            fifo_wren = 1'b1;
+            fifo_wdata = test_data[i];
             @(posedge clk);
         end
-        i_inf.data = '0;
+        fifo_wren = 1'b0;
+        fifo_wdata = '0;
     endtask
 
     //Main sequence to run the tests
@@ -147,6 +174,8 @@ module slave_axi_writer_tb();
         arvalid = 0;
         
         rready = 0;
+        fifo_wren = 0;
+        fifo_wdata = 0;
         
         i_inf.wr_cmd = W_DISABLE;
         
@@ -159,12 +188,12 @@ module slave_axi_writer_tb();
         
         // Test 1: Single data read transfer
         $display("\nStarting Test 1: Single data read transfer");
+        fill_fifo(0); // Fill FIFO with 1 word
         i_inf.wr_cmd = W_GET_ADDR;
         
         burst_length = 0; // Single transfer
         fork
             send_read_address(test_addr, burst_length, 3'b010, 2'b01); // 4-byte beats, INCR burst
-            provide_fifo_data(burst_length);
         join_none
         
         #(5*CLK_PERIOD);
@@ -180,12 +209,12 @@ module slave_axi_writer_tb();
         
         // Test 2: Burst read transfer (4 words)
         $display("\nStarting Test 2: Burst read transfer (4 words)");
+        fill_fifo(3); // Fill FIFO with 4 words
         i_inf.wr_cmd = W_GET_ADDR;
         
         burst_length = 3; // 4 transfers
         fork
             send_read_address(test_addr, burst_length, 3'b010, 2'b01); // 4-byte beats, INCR burst
-            provide_fifo_data(burst_length);
         join_none
         
         #(5*CLK_PERIOD);
@@ -196,11 +225,11 @@ module slave_axi_writer_tb();
         $display("\nStarting Test 3: Back-to-back transfers");
         
         // First transfer (2 words)
+        fill_fifo(1); // Fill FIFO with 2 words
         i_inf.wr_cmd = W_GET_ADDR;
         burst_length = 1; // 2 transfers
         fork
             send_read_address(test_addr, burst_length, 3'b010, 2'b01);
-            provide_fifo_data(burst_length);
         join_none
         
         #(5*CLK_PERIOD);
@@ -208,11 +237,11 @@ module slave_axi_writer_tb();
         receive_read_data(burst_length);
         
         // Second transfer immediately after (3 words)
+        fill_fifo(2); // Fill FIFO with 3 words
         i_inf.wr_cmd = W_GET_ADDR;
         burst_length = 2; // 3 transfers
         fork
             send_read_address(test_addr+32'h40, burst_length, 3'b010, 2'b01);
-            provide_fifo_data(burst_length);
         join_none
         
         #(5*CLK_PERIOD);
@@ -233,9 +262,9 @@ module slave_axi_writer_tb();
     // Monitor
     initial begin
         $timeformat(-9, 0, " ns", 6);
-        $monitor("At time %t: state=%s, data_read=%b, data=%h, rvalid=%b, rready=%b, rlast=%b", 
-                 $time, dut.state_cur.name(), i_inf.data_read, i_inf.data, 
-                 rvalid, rready, rlast);
+        $monitor("At time %t: state=%s, data_read=%b, fifo_empty=%b, rdata=%h, rvalid=%b, rready=%b, rlast=%b", 
+                 $time, dut.state_cur.name(), i_inf.data_read, fifo_empty, 
+                 rdata, rvalid, rready, rlast);
     end
 
 endmodule
