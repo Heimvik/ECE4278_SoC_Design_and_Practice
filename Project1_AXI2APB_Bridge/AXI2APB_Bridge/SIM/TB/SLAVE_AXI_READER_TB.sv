@@ -36,7 +36,7 @@ module slave_axi_reader_tb();
     logic bready;
 
     // Internal interface
-    axi_reader_inf #(ADDR_WIDTH, DATA_WIDTH) i_inf();
+    axi_reader_inf #(ADDR_WIDTH, DATA_WIDTH) axi_rd_inf();
 
     // FIFO signals
     logic fifo_full, fifo_empty;
@@ -69,7 +69,7 @@ module slave_axi_reader_tb();
         .bresp(bresp),
         .bvalid(bvalid),
         .bready(bready),
-        .i_inf(i_inf.slave_axi_reader)
+        .axi_rd_inf(axi_rd_inf.slave_axi_rd)
     );
 
     // FIFO instantiation
@@ -88,8 +88,8 @@ module slave_axi_reader_tb();
     );
 
     // Connect FIFO to reader interface
-    assign fifo_wren = i_inf.data_write;
-    assign fifo_wdata = i_inf.data;
+    assign fifo_wren = axi_rd_inf.fifo_write;
+    assign fifo_wdata = axi_rd_inf.data;
     assign fifo_rden = 1'b0; // Not used in reader testbench
 
     // Clock generation
@@ -147,7 +147,7 @@ module slave_axi_reader_tb();
             wait (wready);
             @(negedge clk);
             // Check FIFO write happened correctly
-            if (i_inf.data_write) begin
+            if (axi_rd_inf.fifo_write) begin
                 if (fifo_wdata !== test_data[i]) begin
                     $display("ERROR: Data written to FIFO mismatch at index %0d. Expected %h, got %h", 
                              i, test_data[i], fifo_wdata);
@@ -199,7 +199,7 @@ module slave_axi_reader_tb();
         
         bready = 0;
         
-        i_inf.rd_cmd = R_DISABLE;
+        axi_rd_inf.rd_cmd = R_DISABLE;
         
         // Wait for reset to complete
         wait(rst_n);
@@ -210,42 +210,42 @@ module slave_axi_reader_tb();
         
         // Test 1: Single data transfer
         $display("\nStarting Test 1: Single data transfer");
-        i_inf.rd_cmd = R_GET_ADDR_DATA;
+        axi_rd_inf.rd_cmd = R_GET_ADDR_DATA;
         
         burst_length = 0; // Single transfer
         send_write_address(test_addr, burst_length, 3'b010, 2'b01); // 4-byte beats, INCR burst
         send_write_data(burst_length);
         #(5*CLK_PERIOD);
-        i_inf.rd_cmd = R_GET_RESP;
+        axi_rd_inf.rd_cmd = R_GET_RESP;
         receive_write_response();
         
         // Check if we're back to IDLE
         #(CLK_PERIOD*2);
-        if (i_inf.rd_info !== R_IDLE) begin
+        if (axi_rd_inf.rd_info !== R_IDLE) begin
             $display("ERROR: Module not in IDLE state after transfer");
             error_count++;
         end
         
         // Test 2: Burst transfer (4 words)
         $display("\nStarting Test 2: Burst transfer (4 words)");
-        i_inf.rd_cmd = R_GET_ADDR_DATA;
+        axi_rd_inf.rd_cmd = R_GET_ADDR_DATA;
         
         burst_length = 3; // 4 transfers
         send_write_address(test_addr, burst_length, 3'b010, 2'b01); // 4-byte beats, INCR burst
         send_write_data(burst_length);
         #(5*CLK_PERIOD);
-        i_inf.rd_cmd = R_GET_RESP;
+        axi_rd_inf.rd_cmd = R_GET_RESP;
         receive_write_response();
         
         // Test 3: Verify response handling
         $display("\nStarting Test 3: Response handling");
-        i_inf.rd_cmd = R_GET_ADDR_DATA;
+        axi_rd_inf.rd_cmd = R_GET_ADDR_DATA;
         
         burst_length = 1; // 2 transfers
         send_write_address(test_addr, burst_length, 3'b010, 2'b01);
         send_write_data(burst_length);
         #(CLK_PERIOD*5);
-        i_inf.rd_cmd = R_GET_RESP;
+        axi_rd_inf.rd_cmd = R_GET_RESP;
         receive_write_response();
         
         // Summary
@@ -262,8 +262,8 @@ module slave_axi_reader_tb();
     // Monitor
     initial begin
         $timeformat(-9, 0, " ns", 6);
-        $monitor("At time %t: state=%s, data_write=%b, fifo_wdata=%h, fifo_full=%b", 
-                 $time, dut.state_cur.name(), i_inf.data_write, fifo_wdata, fifo_full);
+        $monitor("At time %t: state=%s, fifo_write=%b, fifo_wdata=%h, fifo_full=%b", 
+                 $time, dut.state_cur.name(), axi_rd_inf.fifo_write, fifo_wdata, fifo_full);
     end
 
 endmodule

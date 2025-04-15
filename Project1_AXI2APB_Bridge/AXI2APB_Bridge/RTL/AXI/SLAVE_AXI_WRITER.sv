@@ -30,7 +30,7 @@ module slave_axi_writer #(
     input  logic                     rready,
 
     // Internal interface to engine
-    axi_writer_inf.slave_axi_writer i_inf
+    axi_writer_inf.slave_axi_wr axi_wr_inf
 );
     typedef enum {IDLE,AR,WAIT_W,W} w_state;
 
@@ -42,7 +42,7 @@ module slave_axi_writer #(
     data_info_t data_info_cur, data_info_nxt;
 
     always_comb begin
-        i_inf.fifo_read = 1'b0;
+        axi_wr_inf.fifo_read = 1'b0;
         id_nxt = id_cur;
         beats_nxt = beats_cur;
 
@@ -53,12 +53,12 @@ module slave_axi_writer #(
         rvalid = 1'b0;
         rlast = 1'b0;
 
-        i_inf.wr_info = W_IDLE;
+        axi_wr_inf.wr_info = W_IDLE;
 
         case(state_cur)
             IDLE: begin
-                i_inf.wr_info = W_IDLE;
-                if(i_inf.wr_cmd == W_GET_ADDR) begin
+                axi_wr_inf.wr_info = W_IDLE;
+                if(axi_wr_inf.wr_cmd == W_GET_ADDR) begin
                     state_nxt = AR;
                 end else begin
                     state_nxt = IDLE;
@@ -67,7 +67,7 @@ module slave_axi_writer #(
 
             AR: begin
                 arready = 1'b1;
-                i_inf.wr_info = W_BUSY;
+                axi_wr_inf.wr_info = W_BUSY;
                 if(arvalid) begin
                     id_nxt = arid;
                     addr_info_nxt = '{addr: araddr, len: arlen, size: arsize, burst: arburst};
@@ -78,8 +78,8 @@ module slave_axi_writer #(
             end
 
             WAIT_W: begin
-                i_inf.wr_info = W_SWITCH;
-                if(i_inf.wr_cmd == W_GET_DATA) begin
+                axi_wr_inf.wr_info = W_SWITCH;
+                if(axi_wr_inf.wr_cmd == W_GET_DATA) begin
                     data_info_nxt = '{strb: 4'b1111, resp: 2'b0}; //Add actual response here?
                     state_nxt = W;
                 end else begin
@@ -89,9 +89,9 @@ module slave_axi_writer #(
 
             W: begin
                 rvalid = 1'b1;
-                i_inf.wr_info = W_BUSY;
+                axi_wr_inf.wr_info = W_BUSY;
                 if(rready) begin
-                    i_inf.fifo_read = 1'b1;
+                    axi_wr_inf.fifo_read = 1'b1;
                     rlast = (beats_cur == addr_info_cur.len);
                     if(rlast) begin
                         beats_nxt = 4'b0;
@@ -127,14 +127,14 @@ module slave_axi_writer #(
 
 
     //Continous assignment for driving internal interface
-    assign i_inf.addr_info.addr = addr_info_cur.addr;
-    assign i_inf.addr_info.len = addr_info_cur.len;
-    assign i_inf.addr_info.burst = addr_info_cur.burst;
-    assign i_inf.addr_info.size = addr_info_cur.size;
+    assign axi_wr_inf.addr_info.addr = addr_info_cur.addr;
+    assign axi_wr_inf.addr_info.len = addr_info_cur.len;
+    assign axi_wr_inf.addr_info.burst = addr_info_cur.burst;
+    assign axi_wr_inf.addr_info.size = addr_info_cur.size;
 
     //Continous assignment for driving the external interface
     assign rid = id_cur;
-    assign rdata = i_inf.data;
+    assign rdata = axi_wr_inf.data;
     assign rresp = data_info_cur.resp;
 
 endmodule

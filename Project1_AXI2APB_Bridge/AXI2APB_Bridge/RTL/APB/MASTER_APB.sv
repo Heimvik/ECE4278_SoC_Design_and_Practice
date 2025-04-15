@@ -21,7 +21,7 @@ module slave_axi_writer #(
     input  logic                     pready,
     input  logic                     pslverr,
 
-    apb_inf.master_apb i_inf
+    apb_inf.master_apb apb_rw_inf
 
 );
     typedef enum {IDLE, READ_WRITE, DONE} p_state_t;
@@ -38,8 +38,8 @@ module slave_axi_writer #(
     addr_info_t addr_info_cur, addr_info_nxt;   //Holds selected target
 
     always_comb begin
-        i_inf.fifo_read = 1'b0;
-        i_inf.fifo_write = 1'b0;
+        apb_rw_inf.fifo_read = 1'b0;
+        apb_rw_inf.fifo_write = 1'b0;
 
         access_nxt = access_cur;
         beats_nxt = beats_cur;
@@ -53,14 +53,14 @@ module slave_axi_writer #(
 
         case(state_cur)
             IDLE: begin
-                i_inf.apb_info = APB_IDLE;
-                if(i_inf.apb_cmd == APB_READ) begin
+                apb_rw_inf.apb_info = APB_IDLE;
+                if(apb_rw_inf.apb_cmd == APB_READ) begin
                     access_nxt = READ;
-                    addr_info_nxt = i_inf.addr_info_rd;
+                    addr_info_nxt = apb_rw_inf.addr_info_rd;
                     state_nxt = READ_WRITE;
-                end else if(i_inf.apb_cmd == APB_WRITE) begin
+                end else if(apb_rw_inf.apb_cmd == APB_WRITE) begin
                     access_nxt = WRITE;
-                    addr_info_nxt = i_inf.addr_info_wr;
+                    addr_info_nxt = apb_rw_inf.addr_info_wr;
                     state_nxt = READ_WRITE;
                 end else begin
                     state_nxt = IDLE;
@@ -68,7 +68,7 @@ module slave_axi_writer #(
             end
             
             READ_WRITE: begin
-                i_inf.apb_info = APB_BUSY;
+                apb_rw_inf.apb_info = APB_BUSY;
 
                 pwrite = (access_cur == WRITE) ? 1'b1 : 1'b0;
                 //Select signal done with address decoding
@@ -84,8 +84,8 @@ module slave_axi_writer #(
                     ACCESS: begin
                         penable = 1'b1;
                         if(pready) begin
-                            i_inf.fifo_write = (access_cur == READ) ? 1'b1 : 1'b0; //Under a read operation from the AXI, we need to write to the FIFO
-                            i_inf.fifo_read = (access_cur == WRITE) ? 1'b1 : 1'b0; //Under a write operation from the AXI, we need to read from the FIFO
+                            apb_rw_inf.fifo_write = (access_cur == READ) ? 1'b1 : 1'b0; //Under a read operation from the AXI, we need to write to the FIFO
+                            apb_rw_inf.fifo_read = (access_cur == WRITE) ? 1'b1 : 1'b0; //Under a write operation from the AXI, we need to read from the FIFO
                             if(beats_cur == addr_info_cur.len) begin
                                 beats_nxt = 4'b0;
                                 state_nxt = DONE;
@@ -104,8 +104,8 @@ module slave_axi_writer #(
 
             //NBNB! Note that the APB wont go out of done before you give it disable
             DONE: begin
-                i_inf.apb_info = APB_SWITCH;
-                if(i_inf.apb_cmd == APB_DISABLE) begin
+                apb_rw_inf.apb_info = APB_SWITCH;
+                if(apb_rw_inf.apb_cmd == APB_DISABLE) begin
                     state_nxt = IDLE;
                 end else begin
                     state_nxt = DONE;
@@ -131,8 +131,8 @@ module slave_axi_writer #(
     end
 
     assign paddr = addr_info_cur.addr;
-    assign pwdata = i_inf.data_in;
-    assign i_inf.data_out = prdata;
+    assign pwdata = apb_rw_inf.data_in;
+    assign apb_rw_inf.data_out = prdata;
 
 endmodule
 

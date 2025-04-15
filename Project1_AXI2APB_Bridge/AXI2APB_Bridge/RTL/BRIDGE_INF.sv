@@ -17,7 +17,7 @@ interface axi_reader_inf #(
     logic fifo_write;
     logic [DATA_WIDTH-1:0] data;
 
-    modport slave_axi_reader(input rd_cmd,
+    modport slave_axi_rd(input rd_cmd,
                    output rd_info, 
                    output addr_info,
                    output fifo_write, data);
@@ -51,7 +51,7 @@ interface axi_writer_inf #(
     logic fifo_read;
     logic [DATA_WIDTH-1:0] data;
 
-    modport slave_axi_writer(
+    modport slave_axi_wr(
                     input wr_cmd,
                     output wr_info, 
                     output addr_info, 
@@ -60,7 +60,7 @@ interface axi_writer_inf #(
     modport bridge_engine(input wr_info,
                    output wr_cmd);
 
-    modport master_apb(input addr_info);
+    modport apb_rd_adr(input addr_info);
     modport rd_fifo(input fifo_read, output data);
     modport tb(
                 output wr_cmd, 

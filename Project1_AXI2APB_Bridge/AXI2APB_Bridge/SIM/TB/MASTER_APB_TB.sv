@@ -25,7 +25,7 @@ module master_apb_tb();
     logic                     pslverr;
 
     // Internal interface
-    apb_inf #(ADDR_WIDTH, DATA_WIDTH) i_inf();
+    apb_inf #(ADDR_WIDTH, DATA_WIDTH) apb_rw_inf();
 
     // FIFO signals
     logic wr_fifo_full, wr_fifo_empty;
@@ -36,6 +36,15 @@ module master_apb_tb();
     logic [DATA_WIDTH-1:0] wr_fifo_rdata;
     logic [DATA_WIDTH-1:0] rd_fifo_wdata;
     logic [DATA_WIDTH-1:0] rd_fifo_rdata;
+
+    // Test variables
+    logic [DATA_WIDTH-1:0] test_data[0:15];
+    logic [ADDR_WIDTH-1:0] test_addr;
+    int burst_length;
+    int error_count = 0;
+
+    logic [1:0] testing_slave;
+
 
     // DUT instantiation
     slave_axi_writer #(
@@ -52,7 +61,7 @@ module master_apb_tb();
         .prdata(prdata),
         .pready(pready),
         .pslverr(pslverr),
-        .i_inf(i_inf.master_apb)
+        .apb_rw_inf(apb_rw_inf.master_apb)
     );
 
     // Write FIFO (stores data to be written to APB slaves)
@@ -66,7 +75,7 @@ module master_apb_tb();
         .wren_i(wr_fifo_wren), // Not used in this testbench
         .wdata_i(wr_fifo_wdata),  // Not used in this testbench
         .empty_o(wr_fifo_empty),
-        .rden_i(i_inf.fifo_read),
+        .rden_i(apb_rw_inf.fifo_read),
         .rdata_o(wr_fifo_rdata)
     );
 
@@ -78,16 +87,16 @@ module master_apb_tb();
         .clk(clk),
         .rst_n(rst_n),
         .full_o(rd_fifo_full),
-        .wren_i(i_inf.fifo_write),
-        .wdata_i(i_inf.data_out),
+        .wren_i(apb_rw_inf.fifo_write),
+        .wdata_i(apb_rw_inf.data_out),
         .empty_o(rd_fifo_empty),
         .rden_i(rd_fifo_rden), // Not used in this testbench
         .rdata_o(rd_fifo_rdata)     // Not used in this testbench
     );
 
     // Connect FIFOs to interface
-    assign i_inf.data_in = wr_fifo_rdata;
-    assign rd_fifo_wdata = i_inf.data_out;
+    assign apb_rw_inf.data_in = wr_fifo_rdata;
+    assign rd_fifo_wdata = apb_rw_inf.data_out;
 
     // Clock generation
     initial begin
@@ -101,20 +110,12 @@ module master_apb_tb();
         #(CLK_PERIOD*2) rst_n = 1'b1;
     end
 
-    // Test variables
-    logic [DATA_WIDTH-1:0] test_data[0:15];
-    logic [ADDR_WIDTH-1:0] test_addr_rd; // Read address
-    logic [ADDR_WIDTH-1:0] test_addr_wr; // Write address
-    int burst_length;
-    int error_count = 0;
-
     // Task to initialize test data
     task init_test_data;
         for (int i = 0; i < 16; i++) begin
             test_data[i] = $urandom();
         end
-        test_addr_rd = 32'h0001_F000; // Slave 0
-        test_addr_wr = 32'h0002_F000; // Slave 1
+        test_addr = 32'h0001_F000; // Slave 0
     endtask
 
     // Task to simulate APB slave response
@@ -126,6 +127,7 @@ module master_apb_tb();
 
             // ----------- ACCESS PHASE -----------
             wait (penable);
+            verify_psel(); // Verify psel based on address
 
             delay = $urandom_range(0, 3);
             repeat(delay) @(posedge clk);
@@ -176,6 +178,39 @@ module master_apb_tb();
         rd_fifo_rden = 1'b0;
     endtask
 
+    // Function to generate random 4-byte aligned address within bounds
+    function logic [ADDR_WIDTH-1:0] gen_random_addr(input logic[1:0] slave_sel);
+        logic [ADDR_WIDTH-1:0] base_addr, max_addr;
+        begin
+            if (slave_sel == 0) begin
+                base_addr = 32'h0001_F000;
+                max_addr = 32'h0001_FFFF;
+            end else begin
+                base_addr = 32'h0002_F000;
+                max_addr = 32'h0002_FFFF;
+            end
+            
+            // Generate random offset (multiple of 4) within range
+            gen_random_addr = base_addr + ($urandom_range(0, (max_addr-base_addr) >> 2) << 2);
+        end
+    endfunction
+
+    task automatic verify_psel();
+        logic [1:0] expected_psel= 2'b00;
+        
+        if ((paddr >= 32'h0001_F000) && (paddr <= 32'h0001_FFFF)) begin
+            expected_psel = 2'b01;  // Slave 0
+        end else if ((paddr >= 32'h0002_F000) && (paddr <= 32'h0002_FFFF)) begin
+            expected_psel = 2'b10;  // Slave 1
+        end
+        
+        if (psel !== expected_psel) begin
+            $display("ERROR: psel mismatch! Addr=0x%h, Expected=2'b%b, Actual=2'b%b",
+            paddr, expected_psel, psel);
+            error_count++;
+        end
+    endtask
+
     // Main test sequence
     initial begin
         // Initialize signals
@@ -183,9 +218,9 @@ module master_apb_tb();
         prdata = '0;
         pslverr = 1'b0;
         
-        i_inf.apb_cmd = APB_DISABLE;
-        i_inf.addr_info_rd = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
-        i_inf.addr_info_wr = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
+        apb_rw_inf.apb_cmd = APB_DISABLE;
+        apb_rw_inf.addr_info_rd = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
+        apb_rw_inf.addr_info_wr = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
         
         // Wait for reset to complete
         wait(rst_n);
@@ -199,54 +234,61 @@ module master_apb_tb();
         fill_write_fifo(0); // Fill FIFO with 1 word
         
         // Configure write transfer
-        i_inf.addr_info_wr = '{addr: test_addr_wr, len: 0, size: 3'b010, burst: 2'b00};
-        i_inf.apb_cmd = APB_WRITE;
+        testing_slave = 1; // Select slave 1
+        test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
+        apb_rw_inf.addr_info_wr = '{addr: test_addr, len: 0, size: 3'b010, burst: 2'b00};
+        apb_rw_inf.apb_cmd = APB_WRITE;
         
         apb_slave_response(0);
         
-        wait(i_inf.apb_info == APB_SWITCH);
-        i_inf.apb_cmd = APB_DISABLE;
+        wait(apb_rw_inf.apb_info == APB_SWITCH);
+        apb_rw_inf.apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Test 2: Burst read transfer (4 words)
         $display("\nStarting Test 2: Burst read transfer (4 words)");
         
-        // Configure read transfer
-        i_inf.addr_info_rd = '{addr: test_addr_rd, len: 3, size: 3'b100, burst: 2'b00};
-        i_inf.apb_cmd = APB_READ;
+        testing_slave = 1; // Select slave 1
+        test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
+        apb_rw_inf.addr_info_rd = '{addr: test_addr, len: 3, size: 3'b100, burst: 2'b00};
+        apb_rw_inf.apb_cmd = APB_READ;
         
         apb_slave_response(3);
         
         check_read_fifo(3);
 
-        wait(i_inf.apb_info == APB_SWITCH);
-        i_inf.apb_cmd = APB_DISABLE;
+        wait(apb_rw_inf.apb_info == APB_SWITCH);
+        apb_rw_inf.apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Test 3: Verify back-to-back transfers
         $display("\nStarting Test 3: Back-to-back transfers");
         
         // First transfer (write 2 words)
+        testing_slave = 1; // Select slave 1
+        test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
         fill_write_fifo(1);
-        i_inf.addr_info_wr = '{addr: test_addr_wr, len: 1, size: 3'b100, burst: 2'b00};
-        i_inf.apb_cmd = APB_WRITE;
+        apb_rw_inf.addr_info_wr = '{addr: test_addr, len: 1, size: 3'b100, burst: 2'b00};
+        apb_rw_inf.apb_cmd = APB_WRITE;
         
         apb_slave_response(1);
         
-        wait(i_inf.apb_info == APB_SWITCH);
-        i_inf.apb_cmd = APB_DISABLE;
+        wait(apb_rw_inf.apb_info == APB_SWITCH);
+        apb_rw_inf.apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Second transfer (read 16 words)
-        i_inf.addr_info_rd = '{addr: test_addr_rd, len: 15, size: 3'b100, burst: 2'b00};
-        i_inf.apb_cmd = APB_READ;
+        testing_slave = 1; // Select slave 1
+        test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
+        apb_rw_inf.addr_info_rd = '{addr: test_addr, len: 15, size: 3'b100, burst: 2'b00};
+        apb_rw_inf.apb_cmd = APB_READ;
         
         apb_slave_response(15);
         
         check_read_fifo(15);
 
-        wait(i_inf.apb_info == APB_SWITCH);
-        i_inf.apb_cmd = APB_DISABLE;
+        wait(apb_rw_inf.apb_info == APB_SWITCH);
+        apb_rw_inf.apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Summary
@@ -273,7 +315,7 @@ module master_apb_tb();
             $display("FIFOs: wr_empty=%b, rd_full=%b", 
                     wr_fifo_empty, rd_fifo_full);
             $display("Control: cmd=%s, info=%s", 
-                    i_inf.apb_cmd.name(), i_inf.apb_info.name());
+                    apb_rw_inf.apb_cmd.name(), apb_rw_inf.apb_info.name());
         end
     end
 
