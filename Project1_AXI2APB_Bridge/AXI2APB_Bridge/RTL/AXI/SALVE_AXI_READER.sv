@@ -50,7 +50,7 @@ module slave_axi_reader #(
     resp_info_t resp_info_cur, resp_info_nxt;
 
     always_comb begin
-        i_inf.data_write = 1'b0;
+        i_inf.fifo_write = 1'b0;
         id_nxt = id_cur;
 
         addr_info_nxt = addr_info_cur;
@@ -90,7 +90,7 @@ module slave_axi_reader #(
                 i_inf.rd_info = R_BUSY;
                 if(wvalid) begin
                     data_info_nxt = '{strb: wstrb, resp: 0};
-                    i_inf.data_write = 1'b1;
+                    i_inf.fifo_write = 1'b1;
                     if(wlast) begin
                         state_nxt = WAIT_RESP;
                     end else begin

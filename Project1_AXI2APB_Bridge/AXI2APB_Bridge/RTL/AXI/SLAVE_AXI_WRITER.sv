@@ -42,7 +42,7 @@ module slave_axi_writer #(
     data_info_t data_info_cur, data_info_nxt;
 
     always_comb begin
-        i_inf.data_read = 1'b0;
+        i_inf.fifo_read = 1'b0;
         id_nxt = id_cur;
         beats_nxt = beats_cur;
 
@@ -91,13 +91,13 @@ module slave_axi_writer #(
                 rvalid = 1'b1;
                 i_inf.wr_info = W_BUSY;
                 if(rready) begin
-                    i_inf.data_read = 1'b1;
-                    beats_nxt = beats_cur + 1'b1;
+                    i_inf.fifo_read = 1'b1;
                     rlast = (beats_cur == addr_info_cur.len);
                     if(rlast) begin
                         beats_nxt = 4'b0;
                         state_nxt = IDLE;
                     end else begin
+                        beats_nxt = beats_cur + 1'b1;
                         state_nxt = W;
                     end
                 end else begin
