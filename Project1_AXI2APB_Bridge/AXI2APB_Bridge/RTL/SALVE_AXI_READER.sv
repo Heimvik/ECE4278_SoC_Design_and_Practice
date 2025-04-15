@@ -13,7 +13,7 @@ module slave_axi_reader #(
 
     // AXI interface
     // Write Address Channel
-    input logic [3:0] awid,
+    input logic [ID_WIDTH-1:0] awid,
     input logic [ADDR_WIDTH-1:0] awaddr,
     input logic [3:0] awlen,
     input logic [2:0] awsize,
@@ -60,6 +60,8 @@ module slave_axi_reader #(
         awready = 1'b0;
         wready = 1'b0;
         bvalid = 1'b0;
+
+        i_inf.rd_info = R_IDLE;
 
         case(state_cur)
             IDLE: begin
@@ -122,7 +124,7 @@ module slave_axi_reader #(
         endcase
     end
 
-    always_ff @(posedge clk || negedge rst_n) begin
+    always_ff @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
             state_cur <= IDLE;
             id_cur <= {ID_WIDTH{1'b0}};

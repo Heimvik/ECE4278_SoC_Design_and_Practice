@@ -45,7 +45,6 @@ interface axi_writer_inf #(
     wr_info_t wr_info;
 
     //Metadata and transfer information
-    logic addr_info_valid;  //Input to middle register
     addr_info_t addr_info;  
 
     //Actual data
@@ -60,7 +59,7 @@ interface axi_writer_inf #(
     modport engine(input wr_info,
                    output wr_cmd);
 
-    modport addr_info_reg(input addr_info_valid, addr_info);
+    modport addr_info_reg(input addr_info);
     modport data_fifo(input data_read, output data);
     modport tb(output wr_cmd, 
                input wr_info, 
