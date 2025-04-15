@@ -16,7 +16,7 @@ package bridge_utils;
     //For apb
     typedef enum {APB_DISABLE, APB_READ, APB_WRITE} apb_cmd_t; //Commands from the engine
     typedef enum {APB_IDLE, APB_BUSY, APB_SWITCH} apb_info_t; //Status of the bridge buffer
-    typedef enum {READ, WRITE} access_type_t;
+    typedef enum {READ = 0, WRITE = 1} access_type_t;
 
     //For internal communication
     typedef struct packed{

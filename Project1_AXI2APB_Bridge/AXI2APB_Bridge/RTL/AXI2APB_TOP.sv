@@ -56,59 +56,7 @@ module AXI2APB_TOP #(
     input  wire                     pslverr_i
 );
 
-    case(upperstate)
-        READ:
-            case(state)
-                IDLE: begin
-                    i_inf.rd_info = R_IDLE;
-                    if(i_inf.rd_cmd == W_GET_ADDR_DATA) begin
-                        next_state = AR;
-                    end else begin
-                        next_state = IDLE;
-                    end
-                end
-
-                AR: begin
-                    awready = 1'b1;
-                    i_inf.rd_info = R_BUSY;
-                    if(awvalid) begin
-                        i_inf.addr_info_valid = 1'b1;
-                        next_state = R;
-                    end else begin
-                        next_state = AR;
-                    end
-                end
-
-                R: begin
-                    wready = 1'b1;
-                    i_inf.rd_info = R_BUSY;
-                    if(wvalid) begin
-                        i_inf.data_valid = 1'b1; //Write the FIFO
-                        i_inf.data_info_valid = 1'b1;
-                        if(wlast) begin
-                            next_state = WAIT_RESP;
-                        end else begin
-                            next_state = R;
-                        end
-                    end else begin
-                        next_state = R;
-                    end
-                end
-
-                // Do the APB write here
-                
-                B: begin
-                    bvalid = 1'b1;
-                    i_inf.rd_info = R_BUSY;
-                    if(bready) begin
-                        next_state = IDLE;
-                    end else begin
-                        next_state = B;
-                    end
-                end
-
-                default: next_state = IDLE;
-            endcase
+    
 
     
 endmodule
