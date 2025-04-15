@@ -6,13 +6,17 @@ package bridge_utils;
 
     typedef enum {READ, WRITE} bb_type_t;
     
-    //For reader
+    //For axi reader
     typedef enum {R_DISABLE, R_GET_ADDR_DATA, R_GET_RESP} rd_cmd_t;
     typedef enum {R_IDLE, R_BUSY, R_SWITCH} rd_info_t;
 
-    //For writer
+    //For axi writer
     typedef enum {W_DISABLE, W_GET_ADDR, W_GET_DATA} wr_cmd_t;
     typedef enum {W_IDLE, W_BUSY, W_SWITCH} wr_info_t;
+
+    //For apb
+    typedef enum {P_DISABLE, P_READ, PWRITE} apb_cmd_t; //Commands from the engine
+    typedef enum {P_IDLE, P_BUSY, P_SWITCH} apb_info_t; //Status of the bridge buffer
 
     typedef struct packed{
         logic [ADDR_WIDTH-1:0] addr;        //Address the bridgebuffer is addressing

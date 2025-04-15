@@ -69,7 +69,7 @@ module slave_axi_reader_tb();
         .bresp(bresp),
         .bvalid(bvalid),
         .bready(bready),
-        .i_inf(i_inf.reader)
+        .i_inf(i_inf.slave_axi_reader)
     );
 
     // FIFO instantiation

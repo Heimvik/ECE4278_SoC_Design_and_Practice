@@ -57,7 +57,7 @@ module slave_axi_writer_tb();
         .rlast(rlast),
         .rvalid(rvalid),
         .rready(rready),
-        .i_inf(i_inf.writer)
+        .i_inf(i_inf.slave_axi_writer)
     );
 
     // FIFO instantiation

@@ -36,7 +36,7 @@ module slave_axi_reader #(
     input logic bready,
 
     // Internal interface to engine
-    axi_reader_inf.reader i_inf
+    axi_reader_inf.slave_axi_reader i_inf
 );
     typedef enum {IDLE,AR,R,WAIT_RESP,B} r_state;
     

@@ -30,7 +30,7 @@ module slave_axi_writer #(
     input  logic                     rready,
 
     // Internal interface to engine
-    axi_writer_inf.writer i_inf
+    axi_writer_inf.slave_axi_writer i_inf
 );
     typedef enum {IDLE,AR,WAIT_W,W} w_state;
 
