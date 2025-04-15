@@ -133,7 +133,18 @@ module master_apb_tb();
             repeat(delay) @(posedge clk);
 
             pready = 1'b1;
-            prdata = test_data[i]; // Provide data during read
+            if(pwrite) begin
+                if (pwdata == test_data[i]) begin
+                    // Simulate write operation
+                    $display("INFO: Writing data %h to address %h", pwdata, paddr);
+                end else begin
+                    $display("ERROR: Write address mismatch! Expected %h, got %h", test_addr, paddr);
+                    error_count++;
+                end
+            end else begin
+                prdata = test_data[i]; // Provide data during read
+            end
+            
 
             @(posedge clk);
             pready = 1'b0; // Lower pready after access phase
@@ -199,15 +210,18 @@ module master_apb_tb();
         logic [1:0] expected_psel= 2'b00;
         
         if ((paddr >= 32'h0001_F000) && (paddr <= 32'h0001_FFFF)) begin
-            expected_psel = 2'b01;  // Slave 0
+            expected_psel = 2'b00;  // Slave 0
         end else if ((paddr >= 32'h0002_F000) && (paddr <= 32'h0002_FFFF)) begin
-            expected_psel = 2'b10;  // Slave 1
+            expected_psel = 2'b01;  // Slave 1
         end
         
         if (psel !== expected_psel) begin
             $display("ERROR: psel mismatch! Addr=0x%h, Expected=2'b%b, Actual=2'b%b",
             paddr, expected_psel, psel);
             error_count++;
+        end else begin
+            $display("INFO: psel match! Addr=0x%h, Expected=2'b%b, Actual=2'b%b",
+            paddr, expected_psel, psel);
         end
     endtask
 
@@ -304,6 +318,7 @@ module master_apb_tb();
 
     // Monitor
     initial begin
+        /*
         $timeformat(-9, 0, " ns", 6);
         forever begin
             @(posedge clk);
@@ -317,6 +332,7 @@ module master_apb_tb();
             $display("Control: cmd=%s, info=%s", 
                     apb_rw_inf.apb_cmd.name(), apb_rw_inf.apb_info.name());
         end
+        */
     end
 
 endmodule
