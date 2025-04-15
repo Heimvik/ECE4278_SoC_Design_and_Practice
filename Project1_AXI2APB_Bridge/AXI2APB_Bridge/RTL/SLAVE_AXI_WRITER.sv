@@ -2,6 +2,8 @@
 Module SALVE_AXI_WRITE
 This module implements the AXI slave read channels, which it writes to and has an axi interface to the outside.
 */
+import bridge_utils::*;
+
 module slave_axi_writer #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32,
@@ -30,7 +32,6 @@ module slave_axi_writer #(
     // Internal interface to engine
     axi_writer_inf.writer i_inf
 );
-    import bridge_utils::*;
     typedef enum {IDLE,AR,WAIT_W,W} w_state;
 
     //Internal registers

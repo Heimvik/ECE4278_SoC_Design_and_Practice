@@ -2,9 +2,11 @@
 Module SALVE_AXI_READ
 This module interfaces the AXI slave write channels, which it reads from and has an axi interface to the outside.
 */
+import bridge_utils::*;
+
 module slave_axi_reader #(
     parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32,
+    parameter DATA_WIDTH = 32
 )(
     input logic clk,
     input logic rst_n,
@@ -12,7 +14,7 @@ module slave_axi_reader #(
     // AXI interface
     // Write Address Channel
     input logic [3:0] awid,
-    input logic [ADDR_WIDTH:0] awaddr,
+    input logic [ADDR_WIDTH-1:0] awaddr,
     input logic [3:0] awlen,
     input logic [2:0] awsize,
     input logic [1:0] awburst,
@@ -35,32 +37,37 @@ module slave_axi_reader #(
 
     // Internal interface to engine
     axi_reader_inf.reader i_inf
-)
-    import bridge_utils::*;
-    typedef enum {IDLE,AR,R,WAIT_B,B} r_state;
+);
+    typedef enum {IDLE,AR,R,WAIT_RESP,B} r_state;
     
     //Internal registers
     r_state state_cur, state_nxt;
 
-    //States about the current transfer
+    //Metadata of the current transfer
     logic [ID_WIDTH-1:0] id_cur, id_nxt;
+    addr_info_t addr_info_cur, addr_info_nxt; 
+    data_info_t data_info_cur, data_info_nxt;
     resp_info_t resp_info_cur, resp_info_nxt;
 
     always_comb begin
-        i_inf.addr_info_valid = 1'b0;
-        i_inf.data_valid = 1'b0;
+        i_inf.data_write = 1'b0;
+        id_nxt = id_cur;
+
+        addr_info_nxt = addr_info_cur;
+        data_info_nxt = data_info_cur;
+        resp_info_nxt = resp_info_cur;
 
         awready = 1'b0;
         wready = 1'b0;
         bvalid = 1'b0;
 
-        case(state)
+        case(state_cur)
             IDLE: begin
                 i_inf.rd_info = R_IDLE;
-                if(i_inf.rd_cmd == W_GET_ADDR_DATA) begin
-                    next_state = AR;
+                if(i_inf.rd_cmd == R_GET_ADDR_DATA) begin
+                    state_nxt = AR;
                 end else begin
-                    next_state = IDLE;
+                    state_nxt = IDLE;
                 end
             end
 
@@ -68,11 +75,11 @@ module slave_axi_reader #(
                 awready = 1'b1;
                 i_inf.rd_info = R_BUSY;
                 if(awvalid) begin
-                    id_cur = awid;
-                    i_inf.addr_info_valid = 1'b1;
-                    next_state = R;
+                    id_nxt = awid;
+                    addr_info_nxt = '{addr: awaddr, len: awlen, size: awsize, burst: awburst};
+                    state_nxt = R;
                 end else begin
-                    next_state = AR;
+                    state_nxt = AR;
                 end
             end
 
@@ -80,67 +87,67 @@ module slave_axi_reader #(
                 wready = 1'b1;
                 i_inf.rd_info = R_BUSY;
                 if(wvalid) begin
-                    data_info_nxt.id = wid;                    
-                    i_inf.data_valid = 1'b1;
+                    data_info_nxt = '{strb: wstrb, resp: 0};
+                    i_inf.data_write = 1'b1;
                     if(wlast) begin
-                        next_state = WAIT_RESP;
+                        state_nxt = WAIT_RESP;
                     end else begin
-                        next_state = R;
+                        state_nxt = R;
                     end
                 end else begin
-                    next_state = R;
+                    state_nxt = R;
                 end
             end
 
             WAIT_RESP: begin
                 i_inf.rd_info = R_SWITCH;
                 if(i_inf.rd_cmd == R_GET_RESP) begin
-                    next_state = B;
+                    resp_info_nxt = '{resp: 0}; //Add actual response here?
+                    state_nxt = B;
                 end else begin
-                    next_state = WAIT_RESP;
+                    state_nxt = WAIT_RESP;
                 end
             end
             B: begin
                 bvalid = 1'b1;
                 i_inf.rd_info = R_BUSY;
                 if(bready) begin
-                    next_state = IDLE;
+                    state_nxt = IDLE;
                 end else begin
-                    next_state = B;
+                    state_nxt = B;
                 end
             end
 
-            default: next_state = IDLE;
+            default: state_nxt = IDLE;
         endcase
     end
 
-    always_ff @(posedge clk or negedge rst_n) begin
+    always_ff @(posedge clk) begin
         if(!rst_n) begin
             state_cur <= IDLE;
-            id_cur <= ID_WIDTH'b0;
-            resp_info_cur <= '{ID: ID_WIDTH'b0, RESP: 2'b0};
+            id_cur <= {ID_WIDTH{1'b0}};
+            addr_info_cur <= '{addr: {ADDR_WIDTH{1'b0}}, len: 4'b0, size: 3'b0, burst: 2'b0};
+            data_info_cur <= '{strb: 4'b0, resp: 2'b0};
+            resp_info_cur <= '{resp: 2'b0};
         end else begin
-            state_cur <= next_state;
-            id_cur = id_nxt;
-            resp_info_cur = resp_info_nxt;
+            state_cur <= state_nxt;
+            id_cur <= id_nxt;
+            addr_info_cur <= addr_info_nxt;
+            data_info_cur <= data_info_nxt;
+            resp_info_cur <= resp_info_nxt;
         end
     end
 
-    //Continuous assignment for local signals
-    assign data_info_nxt = '{ID: id_cur, RESP: 0};
-    assign resp_info_nxt = '{ID: id_cur, RESP: 0};
-
     //Continous assignment for driving internal interface
-    assign i_inf.addr_info.id = awid;
-    assign i_inf.addr_info.addr = awaddr;
-    assign i_inf.addr_info.len = awlen;
-    assign i_inf.addr_info.burst = awburst;
-    assign i_inf.addr_info.size = awsize;
+    assign i_inf.addr_info.addr = addr_info_cur.addr;
+    assign i_inf.addr_info.len = addr_info_cur.len;
+    assign i_inf.addr_info.burst = addr_info_cur.burst;
+    assign i_inf.addr_info.size = addr_info_cur.size;
 
     assign i_inf.data = wdata;
 
     //Continous assignment for driving the external interface
-    assign bid = resp_info.id;
-    assign bresp = resp_info.resp;
+    assign bid = id_cur;
+    assign bresp = resp_info_cur.resp;
 
 endmodule

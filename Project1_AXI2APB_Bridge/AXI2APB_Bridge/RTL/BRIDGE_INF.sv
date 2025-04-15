@@ -11,25 +11,26 @@ interface axi_reader_inf #(
     rd_info_t rd_info;
 
     //Metadata and transfer information
-    logic addr_info_valid;  //Input to middle register
     addr_info_t addr_info;
 
     //Actual data
-    logic data_valid;
+    logic data_write;
     logic [DATA_WIDTH-1:0] data;
 
     modport reader(input rd_cmd,
                    output rd_info, 
-                   output addr_info_valid, addr_info,
-                   output data_info_valid, data_info, 
-                   output data_valid, data
-                   input resp_info);
+                   output addr_info,
+                   output data_write, data);
 
     modport engine(input rd_info, 
                    output rd_cmd);
 
-    modport addr_info_reg(input addr_info_valid, addr_info);
-    modport data_fifo(input data_valid, data);
+    modport addr_info_reg(input addr_info);
+    modport data_fifo(input data_write, data);
+    modport tb(output rd_cmd, 
+               input rd_info, 
+               input addr_info, 
+               input data_write, data);
 endinterface
 
 //Internal interface toward the axi_writer
@@ -48,17 +49,21 @@ interface axi_writer_inf #(
     addr_info_t addr_info;  
 
     //Actual data
-    logic data_ready;
+    logic data_read;
     logic [DATA_WIDTH-1:0] data;
 
     modport writer(input wr_cmd,
                    output wr_info, 
-                   output addr_info_valid, addr_info, 
-                   output data_ready, input data);
+                   output addr_info, 
+                   output data_read, input data);
 
     modport engine(input wr_info,
                    output wr_cmd);
 
     modport addr_info_reg(input addr_info_valid, addr_info);
-    modport data_fifo(input data_ready, output data);
+    modport data_fifo(input data_read, output data);
+    modport tb(output wr_cmd, 
+               input wr_info, 
+               input addr_info, 
+               input data_read, output data);
 endinterface
