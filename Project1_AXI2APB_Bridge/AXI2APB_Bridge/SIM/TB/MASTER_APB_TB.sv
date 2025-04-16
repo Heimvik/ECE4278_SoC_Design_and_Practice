@@ -26,6 +26,18 @@ module master_apb_tb();
 
     // Internal interface
     apb_inf #(ADDR_WIDTH, DATA_WIDTH) apb_rw_inf();
+    apb_cmd_t apb_cmd;
+    apb_info_t apb_info;
+
+    //Metadata and transfer information
+    addr_info_t addr_info_rd;
+    addr_info_t addr_info_wr; 
+
+    //Actual data
+    logic fifo_read;
+    logic [DATA_WIDTH-1:0] data_in;
+    logic fifo_write;
+    logic [DATA_WIDTH-1:0] data_out;
 
     // FIFO signals
     logic wr_fifo_full, wr_fifo_empty;
@@ -47,7 +59,7 @@ module master_apb_tb();
 
 
     // DUT instantiation
-    slave_axi_writer #(
+    master_apb #(
         .ADDR_WIDTH(ADDR_WIDTH),
         .DATA_WIDTH(DATA_WIDTH)
     ) dut (
@@ -61,7 +73,14 @@ module master_apb_tb();
         .prdata(prdata),
         .pready(pready),
         .pslverr(pslverr),
-        .apb_rw_inf(apb_rw_inf.master_apb)
+        .apb_cmd(apb_cmd),
+        .apb_info(apb_info),
+        .addr_info_rd(addr_info_rd),
+        .addr_info_wr(addr_info_wr),
+        .fifo_read(fifo_read),
+        .data_in(data_in),
+        .fifo_write(fifo_write),
+        .data_out(data_out)
     );
 
     // Write FIFO (stores data to be written to APB slaves)
@@ -75,7 +94,7 @@ module master_apb_tb();
         .wren_i(wr_fifo_wren), // Not used in this testbench
         .wdata_i(wr_fifo_wdata),  // Not used in this testbench
         .empty_o(wr_fifo_empty),
-        .rden_i(apb_rw_inf.fifo_read),
+        .rden_i(fifo_read),
         .rdata_o(wr_fifo_rdata)
     );
 
@@ -87,16 +106,16 @@ module master_apb_tb();
         .clk(clk),
         .rst_n(rst_n),
         .full_o(rd_fifo_full),
-        .wren_i(apb_rw_inf.fifo_write),
-        .wdata_i(apb_rw_inf.data_out),
+        .wren_i(fifo_write),
+        .wdata_i(data_out),
         .empty_o(rd_fifo_empty),
         .rden_i(rd_fifo_rden), // Not used in this testbench
         .rdata_o(rd_fifo_rdata)     // Not used in this testbench
     );
 
     // Connect FIFOs to interface
-    assign apb_rw_inf.data_in = wr_fifo_rdata;
-    assign rd_fifo_wdata = apb_rw_inf.data_out;
+    assign data_in = wr_fifo_rdata;
+    assign rd_fifo_wdata = data_out;
 
     // Clock generation
     initial begin
@@ -232,9 +251,9 @@ module master_apb_tb();
         prdata = '0;
         pslverr = 1'b0;
         
-        apb_rw_inf.apb_cmd = APB_DISABLE;
-        apb_rw_inf.addr_info_rd = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
-        apb_rw_inf.addr_info_wr = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
+        apb_cmd = APB_DISABLE;
+        addr_info_rd = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
+        addr_info_wr = '{addr: 0, len: 0, size: 3'b100, burst: 2'b00};
         
         // Wait for reset to complete
         wait(rst_n);
@@ -250,13 +269,13 @@ module master_apb_tb();
         // Configure write transfer
         testing_slave = 1; // Select slave 1
         test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
-        apb_rw_inf.addr_info_wr = '{addr: test_addr, len: 0, size: 3'b010, burst: 2'b00};
-        apb_rw_inf.apb_cmd = APB_WRITE;
+        addr_info_wr = '{addr: test_addr, len: 0, size: 3'b010, burst: 2'b00};
+        apb_cmd = APB_WRITE;
         
         apb_slave_response(0);
         
-        wait(apb_rw_inf.apb_info == APB_SWITCH);
-        apb_rw_inf.apb_cmd = APB_DISABLE;
+        wait(apb_info == APB_SWITCH);
+        apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Test 2: Burst read transfer (4 words)
@@ -264,15 +283,15 @@ module master_apb_tb();
         
         testing_slave = 1; // Select slave 1
         test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
-        apb_rw_inf.addr_info_rd = '{addr: test_addr, len: 3, size: 3'b100, burst: 2'b00};
-        apb_rw_inf.apb_cmd = APB_READ;
+        addr_info_rd = '{addr: test_addr, len: 3, size: 3'b100, burst: 2'b00};
+        apb_cmd = APB_READ;
         
         apb_slave_response(3);
         
         check_read_fifo(3);
 
-        wait(apb_rw_inf.apb_info == APB_SWITCH);
-        apb_rw_inf.apb_cmd = APB_DISABLE;
+        wait(apb_info == APB_SWITCH);
+        apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Test 3: Verify back-to-back transfers
@@ -282,27 +301,27 @@ module master_apb_tb();
         testing_slave = 1; // Select slave 1
         test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
         fill_write_fifo(1);
-        apb_rw_inf.addr_info_wr = '{addr: test_addr, len: 1, size: 3'b100, burst: 2'b00};
-        apb_rw_inf.apb_cmd = APB_WRITE;
+        addr_info_wr = '{addr: test_addr, len: 1, size: 3'b100, burst: 2'b00};
+        apb_cmd = APB_WRITE;
         
         apb_slave_response(1);
         
-        wait(apb_rw_inf.apb_info == APB_SWITCH);
-        apb_rw_inf.apb_cmd = APB_DISABLE;
+        wait(apb_info == APB_SWITCH);
+        apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Second transfer (read 16 words)
         testing_slave = 1; // Select slave 1
         test_addr = gen_random_addr(testing_slave); // Generate random address for slave 1
-        apb_rw_inf.addr_info_rd = '{addr: test_addr, len: 15, size: 3'b100, burst: 2'b00};
-        apb_rw_inf.apb_cmd = APB_READ;
+        addr_info_rd = '{addr: test_addr, len: 15, size: 3'b100, burst: 2'b00};
+        apb_cmd = APB_READ;
         
         apb_slave_response(15);
         
         check_read_fifo(15);
 
-        wait(apb_rw_inf.apb_info == APB_SWITCH);
-        apb_rw_inf.apb_cmd = APB_DISABLE;
+        wait(apb_info == APB_SWITCH);
+        apb_cmd = APB_DISABLE;
         #(2*CLK_PERIOD);
         
         // Summary
@@ -330,7 +349,7 @@ module master_apb_tb();
             $display("FIFOs: wr_empty=%b, rd_full=%b", 
                     wr_fifo_empty, rd_fifo_full);
             $display("Control: cmd=%s, info=%s", 
-                    apb_rw_inf.apb_cmd.name(), apb_rw_inf.apb_info.name());
+                    apb_cmd.name(), apb_info.name());
         end
         */
     end

@@ -28,7 +28,11 @@ module slave_axi_writer_tb();
     logic                     rready;
 
     // Internal interface
-    axi_writer_inf #(ADDR_WIDTH, DATA_WIDTH) axi_wr_inf();
+    wr_cmd_t wr_cmd;
+    wr_info_t wr_info;
+    addr_info_t addr_info;  
+    logic fifo_read;
+    logic [DATA_WIDTH-1:0] data;
 
     // FIFO signals
     logic fifo_full, fifo_empty;
@@ -57,7 +61,11 @@ module slave_axi_writer_tb();
         .rlast(rlast),
         .rvalid(rvalid),
         .rready(rready),
-        .axi_wr_inf(axi_wr_inf.slave_axi_wr)
+        .wr_cmd(wr_cmd),
+        .wr_info(wr_info),
+        .addr_info(addr_info),
+        .fifo_read(fifo_read),
+        .data(data)
     );
 
     // FIFO instantiation
@@ -76,8 +84,8 @@ module slave_axi_writer_tb();
     );
 
     // Connect FIFO to writer interface
-    assign fifo_rden = axi_wr_inf.fifo_read;
-    assign axi_wr_inf.data = fifo_rdata;
+    assign fifo_rden = fifo_read;
+    assign data = fifo_rdata;
 
     // Clock generation
     initial begin
@@ -177,7 +185,7 @@ module slave_axi_writer_tb();
         fifo_wren = 0;
         fifo_wdata = 0;
         
-        axi_wr_inf.wr_cmd = W_DISABLE;
+        wr_cmd = W_DISABLE;
         
         // Wait for reset to complete
         wait(rst_n);
@@ -189,7 +197,7 @@ module slave_axi_writer_tb();
         // Test 1: Single data read transfer
         $display("\nStarting Test 1: Single data read transfer");
         fill_fifo(0); // Fill FIFO with 1 word
-        axi_wr_inf.wr_cmd = W_GET_ADDR;
+        wr_cmd = W_GET_ADDR;
         
         burst_length = 0; // Single transfer
         fork
@@ -197,12 +205,12 @@ module slave_axi_writer_tb();
         join_none
         
         #(5*CLK_PERIOD);
-        axi_wr_inf.wr_cmd = W_GET_DATA;
+        wr_cmd = W_GET_DATA;
         receive_read_data(burst_length);
         
         // Check if we're back to IDLE
         #(CLK_PERIOD*2);
-        if (axi_wr_inf.wr_info !== W_IDLE) begin
+        if (wr_info !== W_IDLE) begin
             $display("ERROR: Module not in IDLE state after transfer");
             error_count++;
         end
@@ -210,7 +218,7 @@ module slave_axi_writer_tb();
         // Test 2: Burst read transfer (4 words)
         $display("\nStarting Test 2: Burst read transfer (4 words)");
         fill_fifo(3); // Fill FIFO with 4 words
-        axi_wr_inf.wr_cmd = W_GET_ADDR;
+        wr_cmd = W_GET_ADDR;
         
         burst_length = 3; // 4 transfers
         fork
@@ -218,7 +226,7 @@ module slave_axi_writer_tb();
         join_none
         
         #(5*CLK_PERIOD);
-        axi_wr_inf.wr_cmd = W_GET_DATA;
+        wr_cmd = W_GET_DATA;
         receive_read_data(burst_length);
         
         // Test 3: Verify back-to-back transfers
@@ -226,26 +234,26 @@ module slave_axi_writer_tb();
         
         // First transfer (2 words)
         fill_fifo(1); // Fill FIFO with 2 words
-        axi_wr_inf.wr_cmd = W_GET_ADDR;
+        wr_cmd = W_GET_ADDR;
         burst_length = 1; // 2 transfers
         fork
             send_read_address(test_addr, burst_length, 3'b010, 2'b01);
         join_none
         
         #(5*CLK_PERIOD);
-        axi_wr_inf.wr_cmd = W_GET_DATA;
+        wr_cmd = W_GET_DATA;
         receive_read_data(burst_length);
         
         // Second transfer immediately after (3 words)
         fill_fifo(2); // Fill FIFO with 3 words
-        axi_wr_inf.wr_cmd = W_GET_ADDR;
+        wr_cmd = W_GET_ADDR;
         burst_length = 2; // 3 transfers
         fork
             send_read_address(test_addr+32'h40, burst_length, 3'b010, 2'b01);
         join_none
         
         #(5*CLK_PERIOD);
-        axi_wr_inf.wr_cmd = W_GET_DATA;
+        wr_cmd = W_GET_DATA;
         receive_read_data(burst_length);
         
         // Summary
@@ -263,7 +271,7 @@ module slave_axi_writer_tb();
     initial begin
         $timeformat(-9, 0, " ns", 6);
         $monitor("At time %t: state=%s, fifo_read=%b, fifo_empty=%b, rdata=%h, rvalid=%b, rready=%b, rlast=%b", 
-                 $time, dut.state_cur.name(), axi_wr_inf.fifo_read, fifo_empty, 
+                 $time, dut.state_cur.name(), fifo_read, fifo_empty, 
                  rdata, rvalid, rready, rlast);
     end
 
