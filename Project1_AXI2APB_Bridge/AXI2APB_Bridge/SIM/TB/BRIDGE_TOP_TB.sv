@@ -270,7 +270,7 @@ module TOP_TB;
 
             // Compare 
             for (int j = 0; j < len; j++) begin
-                int check_idx = (burst_type == 0) ? len-1 : j;
+                int check_idx = (burst_type == 0) ? len-1 : j; //Check index? HERE
                 if (read_data[j] !== write_data[check_idx]) begin
                     $display("[%s] FAIL @%0h idx=%0d → W:%08x, R:%08x",
                             name, curr_addr + j*4, j, write_data[check_idx], read_data[j]);
@@ -297,8 +297,8 @@ module TOP_TB;
 
         test_init();
 
-        test_bridge(`SLV1_REGION_START, 0, 16, "SLV1");
-        test_bridge(`SLV2_REGION_START, 0, 16, "SLV2");
+        test_bridge(`SLV1_REGION_START, 1, 16, "SLV1"); //NBNB! CHANGE THIS TO 1
+        test_bridge(`SLV2_REGION_START, 1, 16, "SLV2"); //NBNB! CHANGE THIS TO 1
 
         test_bridge(`SLV1_REGION_START, 1, 16, "SLV1");
         test_bridge(`SLV2_REGION_START, 1, 16, "SLV2");
