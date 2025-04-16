@@ -297,8 +297,8 @@ module TOP_TB;
 
         test_init();
 
-        test_bridge(`SLV1_REGION_START, 1, 16, "SLV1"); //NBNB! CHANGE THIS TO 1
-        test_bridge(`SLV2_REGION_START, 1, 16, "SLV2"); //NBNB! CHANGE THIS TO 1
+        test_bridge(`SLV1_REGION_START, 0, 16, "SLV1");
+        test_bridge(`SLV2_REGION_START, 0, 16, "SLV2");
 
         test_bridge(`SLV1_REGION_START, 1, 16, "SLV1");
         test_bridge(`SLV2_REGION_START, 1, 16, "SLV2");

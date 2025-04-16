@@ -105,7 +105,9 @@ module master_apb #(
                                 phase_nxt = SETUP;
                             end else begin
                                 beats_nxt = beats_cur + 1'b1;
-                                addr_info_nxt.addr = addr_info_cur.addr + (0'b1<<addr_info_cur.size); //NB! Size is log2!
+                                if(addr_info_cur.burst == 2'b01) begin //Only increment destination address if INCR burst
+                                    addr_info_nxt.addr = addr_info_cur.addr + (0'b1<<addr_info_cur.size); //NB! Size is log2!
+                                end
                                 phase_nxt = SETUP;
                             end
                         end else begin
