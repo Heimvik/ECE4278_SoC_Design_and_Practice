@@ -1,5 +1,5 @@
 //`include "../TB/APB_TYPEDEF.svh"
-`timescale 1ns/1ps //NB! HAD TO CHANGE THIS FOR BEING ABLE TO SIMULATE
+//`timescale 1ns/1ps //NB! HAD TO CHANGE THIS FOR BEING ABLE TO SIMULATE
 
 module APB_SLAVE 
 #(
