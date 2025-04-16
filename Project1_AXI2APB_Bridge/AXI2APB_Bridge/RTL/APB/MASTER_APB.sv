@@ -26,8 +26,8 @@ module master_apb #(
     output apb_info_t apb_info,
     
     // Address information
-    input addr_info_t addr_info_rd,
     input addr_info_t addr_info_wr,
+    input addr_info_t addr_info_rd,
     
     // Data signals
     output logic fifo_read,
@@ -68,11 +68,11 @@ module master_apb #(
                 apb_info = APB_IDLE;
                 if(apb_cmd == APB_READ) begin
                     access_nxt = READ;
-                    addr_info_nxt = addr_info_rd;
+                    addr_info_nxt = addr_info_wr; // Use addr info from the axi write module
                     state_nxt = READ_WRITE;
                 end else if(apb_cmd == APB_WRITE) begin
                     access_nxt = WRITE;
-                    addr_info_nxt = addr_info_wr;
+                    addr_info_nxt = addr_info_rd; // Use addr info from the axi read module
                     state_nxt = READ_WRITE;
                 end else begin
                     state_nxt = IDLE;
@@ -83,9 +83,10 @@ module master_apb #(
                 apb_info = APB_BUSY;
 
                 pwrite = (access_cur == WRITE) ? 1'b1 : 1'b0;
+
                 //Select signal done with address decoding
-                //psel[0] = (addr_info_cur.addr >= 32'h0001_F000) && (addr_info_cur.addr <= 32'h0001_FFFF);
-                psel[0] = (addr_info_cur.addr >= 32'h0002_F000) && (addr_info_cur.addr <= 32'h0002_FFFF);
+                psel[0] = (addr_info_cur.addr >= 32'h0001_F000) && (addr_info_cur.addr <= 32'h0001_FFFF);
+                psel[1] = (addr_info_cur.addr >= 32'h0002_F000) && (addr_info_cur.addr <= 32'h0002_FFFF);
 
                 case(phase_cur)
                     SETUP: begin
@@ -104,7 +105,7 @@ module master_apb #(
                                 phase_nxt = SETUP;
                             end else begin
                                 beats_nxt = beats_cur + 1'b1;
-                                addr_info_nxt.addr = addr_info_cur.addr + (addr_info_cur.size * 8);
+                                addr_info_nxt.addr = addr_info_cur.addr + (0'b1<<addr_info_cur.size); //NB! Size is log2!
                                 phase_nxt = SETUP;
                             end
                         end else begin

@@ -2,7 +2,7 @@ package bridge_utils;
     parameter int unsigned ID_WIDTH = 1;
     parameter int unsigned ADDR_WIDTH = 32;
     parameter int unsigned DATA_WIDTH = 32;
-    parameter int unsigned LG2_NUM_FIFOS = 1; //We start with one FIFO initially
+    parameter int unsigned FIFO_DEPTH_LG2 = 4;
 
     
     //For axi reader

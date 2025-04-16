@@ -22,7 +22,7 @@ module slave_axi_reader #(
     output logic awready,
 
     // Write Data Channel
-    input logic [3:0] wid,
+    input logic [ID_WIDTH-1:0] wid,
     input logic [DATA_WIDTH-1:0] wdata,
     input logic [3:0] wstrb,
     input logic wlast,
@@ -30,7 +30,7 @@ module slave_axi_reader #(
     output logic wready,
 
     // Write Response Channel
-    output logic [3:0] bid,
+    output logic [ID_WIDTH-1:0] bid,
     output logic [1:0] bresp,
     output logic bvalid,
     input logic bready,

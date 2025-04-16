@@ -1,8 +1,8 @@
 import bridge_utils::*;
 
-module AXI2APB_TOP #(
-    parameter ADDR_WIDTH            = 32,
-    parameter DATA_WIDTH            = 32
+module bridge_engine #(
+    parameter ADDR_WIDTH = 32,
+    parameter DATA_WIDTH = 32
 )(
     input  logic clk,
     input  logic rst_n,
@@ -10,14 +10,14 @@ module AXI2APB_TOP #(
     output apb_cmd_t apb_cmd,
     input apb_info_t apb_info,
 
-    wr_cmd_t wr_cmd,
-    wr_info_t wr_info,
+    output wr_cmd_t wr_cmd,
+    input wr_info_t wr_info,
 
-    rd_cmd_t rd_cmd,
-    rd_info_t rd_info,
+    output rd_cmd_t rd_cmd,
+    input rd_info_t rd_info,
 
-    logic arvalid,
-    logic awvalid
+    input logic arvalid,
+    input logic awvalid
 );
     //1. Arbitrate on wither read or write
     typedef enum {IDLE,READ,WRITE} state_t;
@@ -43,7 +43,7 @@ module AXI2APB_TOP #(
             IDLE: begin
                 if (arvalid || awvalid) begin
                     if (arvalid) begin
-                        wr_cmd = W_GET_DATA;
+                        wr_cmd = W_GET_ADDR;
                         state_nxt = READ;
                     end else if (awvalid) begin
                         rd_cmd = R_GET_ADDR_DATA;

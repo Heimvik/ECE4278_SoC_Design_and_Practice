@@ -15,7 +15,8 @@ module TOP_TB;
 
     // inject random seed
     initial begin
-        $srandom(`RANDOM_SEED);
+        $urandom(`RANDOM_SEED); //NB! HAD TO CHANGE THIS FOR BEING ABLE TO SIMULATE
+        //$srandom(`RANDOM_SEED); 
     end
 
     //----------------------------------------------------------
